@@ -1,0 +1,38 @@
+{
+  "name": "華森行程通報",
+  "short_name": "華森通報",
+  "description": "華森建業 行程通報與提醒系統",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f1117",
+  "theme_color": "#0f1117",
+  "lang": "zh-TW",
+  "categories": [
+    "productivity",
+    "business"
+  ],
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "填寫行程",
+      "short_name": "填寫",
+      "url": "./#form",
+      "description": "快速新增行程通報"
+    }
+  ]
+}
