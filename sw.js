@@ -1,5 +1,5 @@
-// 華森行程通報 Service Worker v5
-const CACHE = 'huasen-v5';
+// 華森行程通報 Service Worker v6
+const CACHE = 'huasen-v6';
 
 self.addEventListener('install', e => {
   self.skipWaiting();

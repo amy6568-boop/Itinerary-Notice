@@ -1,7 +1,7 @@
 {
   "name": "華森行程通報",
   "short_name": "華森通報",
-  "description": "華森建業 行程通報與提醒系統",
+  "description": "華森建業 行程通報與提醒系統 v6",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -31,7 +31,7 @@
     {
       "name": "填寫行程",
       "short_name": "填寫",
-      "url": "./#form",
+      "url": "./",
       "description": "快速新增行程通報"
     }
   ]

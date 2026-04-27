@@ -8,691 +8,286 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="華森通報">
 <meta name="theme-color" content="#0f1117">
-<meta name="description" content="華森建業 行程通報與提醒系統 v5">
-<title>華森行程通報 v5</title>
+<title>華森行程通報 v6</title>
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="icon" type="image/png" href="./icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=DM+Mono:wght@400;500&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --ink:    #0f1117;
-  --ink2:   #2a2d38;
-  --ink3:   #5a5f72;
-  --paper:  #f8f6f1;
-  --paper2: #eeeae0;
-  --paper3: #e2ddd2;
-  --gold:   #c8973a;
-  --gold2:  #e8b85a;
-  --green:  #2d7a4f;
-  --red:    #c0392b;
-  --blue:   #1a4f8a;
-  --r:      10px;
-  --sh:     0 2px 16px rgba(15,17,23,.10);
-  --sh2:    0 8px 40px rgba(15,17,23,.16);
-  /* Safe area insets for notch/home indicator */
-  --sat: env(safe-area-inset-top, 0px);
-  --sab: env(safe-area-inset-bottom, 0px);
-  --sal: env(safe-area-inset-left, 0px);
-  --sar: env(safe-area-inset-right, 0px);
-  --nav-h: 60px;
-  --header-h: 56px;
+  --ink:#0f1117;--ink2:#2a2d38;--ink3:#5a5f72;
+  --paper:#f8f6f1;--paper2:#eeeae0;--paper3:#e2ddd2;
+  --gold:#c8973a;--gold2:#e8b85a;
+  --green:#2d7a4f;--red:#c0392b;--blue:#1a4f8a;
+  --purple:#6b3fa0;
+  --r:10px;--sh:0 2px 16px rgba(15,17,23,.10);--sh2:0 8px 40px rgba(15,17,23,.16);
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);
+  --hh:56px;
 }
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { height: 100%; }
-body {
-  font-family: 'Sora', sans-serif;
-  background: var(--paper);
-  color: var(--ink);
-  height: 100%;
-  overflow: hidden;
-  -webkit-font-smoothing: antialiased;
-  -webkit-tap-highlight-color: transparent;
-  overscroll-behavior: none;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{height:100%;}
+body{
+  font-family:'Sora',sans-serif;background:var(--paper);color:var(--ink);
+  min-height:100%;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;
 }
-
-/* ── 背景紋理 ── */
-body::before {
-  content: '';
-  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+body::before{
+  content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:
-    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(200,151,58,.06) 40px),
-    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(200,151,58,.03) 40px);
+    repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(200,151,58,.06) 40px),
+    repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(200,151,58,.03) 40px);
 }
+/* HEADER */
+.app-header{
+  position:sticky;top:0;z-index:100;background:var(--ink);
+  padding-top:var(--sat);
+  display:flex;align-items:flex-end;
+  box-shadow:0 1px 12px rgba(0,0,0,.4);
+}
+.header-inner{
+  width:100%;display:flex;align-items:center;
+  padding:0 16px;height:var(--hh);gap:10px;
+}
+.logo-icon{width:32px;height:32px;border-radius:7px;overflow:hidden;flex-shrink:0;}
+.logo-icon img{width:100%;height:100%;object-fit:cover;display:block;}
+.logo-text{font-family:'Noto Serif TC',serif;font-size:17px;font-weight:700;color:#fff;}
+.logo-sub{font-size:9px;color:var(--gold2);font-family:'DM Mono',monospace;letter-spacing:.1em;text-transform:uppercase;}
+.header-badge{margin-left:auto;font-size:11px;color:var(--gold2);font-family:'DM Mono',monospace;}
 
-/* ══ TOP HEADER ══ */
-.app-header {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: var(--ink);
-  padding-top: var(--sat);
-  height: calc(var(--header-h) + var(--sat));
-  display: flex; align-items: flex-end;
-  padding-bottom: 0;
-  box-shadow: 0 1px 12px rgba(0,0,0,.4);
-}
-.header-inner {
-  width: 100%; display: flex; align-items: center;
-  padding: 0 16px; height: var(--header-h);
-  gap: 10px;
-}
-.logo-icon {
-  width: 32px; height: 32px; border-radius: 8px;
-  background: linear-gradient(135deg, var(--gold), var(--gold2));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; flex-shrink: 0;
-}
-.logo-text {
-  font-family: 'Noto Serif TC', serif;
-  font-size: 17px; font-weight: 700; color: #fff;
-  letter-spacing: .02em;
-}
-.logo-sub {
-  font-size: 9px; color: var(--gold2);
-  font-family: 'DM Mono', monospace;
-  letter-spacing: .1em; text-transform: uppercase;
-  line-height: 1.2;
-}
-.header-actions { margin-left: auto; display: flex; gap: 6px; }
-.hbtn {
-  background: rgba(255,255,255,.08); border: none;
-  border-radius: 8px; padding: 7px 10px;
-  color: rgba(255,255,255,.7); font-size: 18px;
-  cursor: pointer; transition: background .2s;
-  display: flex; align-items: center;
-}
-.hbtn:active { background: rgba(255,255,255,.18); }
+/* MAIN */
+.app-main{padding:16px 14px calc(24px + var(--sab));max-width:680px;margin:0 auto;}
 
-/* ══ MAIN SCROLL AREA ══ */
-.app-main {
-  position: fixed;
-  top: calc(var(--header-h) + var(--sat));
-  left: 0; right: 0;
-  bottom: calc(var(--nav-h) + var(--sab));
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: contain;
+/* CONFIG NOTICE */
+.config-notice{
+  background:linear-gradient(135deg,#fff8ec,#fff3d4);
+  border:1.5px solid var(--gold);border-radius:12px;
+  padding:12px 14px;margin-bottom:14px;
+  font-size:12px;color:var(--ink2);
+  display:flex;align-items:flex-start;gap:10px;line-height:1.6;
 }
-.page { display: none; min-height: 100%; }
-.page.active { display: block; animation: fadeUp .28s ease; }
-@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+.config-notice .icon{font-size:18px;flex-shrink:0;}
+.config-notice code{font-family:'DM Mono',monospace;background:rgba(200,151,58,.15);padding:1px 5px;border-radius:4px;font-size:11px;color:var(--gold);}
 
-.container { padding: 16px 14px 24px; max-width: 680px; margin: 0 auto; }
+/* LOADING */
+.loading-bar{
+  background:var(--ink);border-radius:12px;padding:14px 18px;
+  margin-bottom:14px;display:flex;align-items:center;gap:12px;
+  font-size:13px;color:rgba(255,255,255,.7);
+}
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--gold2);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-bar.done{background:var(--green);}
+.loading-bar.err{background:var(--red);}
 
-/* ══ BOTTOM NAV ══ */
-.bottom-nav {
-  position: fixed;
-  bottom: 0; left: 0; right: 0; z-index: 100;
-  background: var(--ink);
-  padding-bottom: var(--sab);
-  height: calc(var(--nav-h) + var(--sab));
-  display: flex; align-items: flex-start;
-  border-top: 1px solid rgba(255,255,255,.07);
-  box-shadow: 0 -2px 20px rgba(0,0,0,.25);
+/* FORM CARD */
+.form-card{background:#fff;border-radius:16px;box-shadow:var(--sh2);overflow:hidden;margin-bottom:16px;}
+.form-header{
+  background:linear-gradient(135deg,var(--ink) 0%,var(--ink2) 100%);
+  padding:18px;display:flex;align-items:center;gap:12px;
 }
-.bnav-items {
-  display: flex; width: 100%;
-  height: var(--nav-h);
-}
-.bnav-item {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 3px; cursor: pointer;
-  padding: 8px 4px;
-  transition: opacity .15s;
-  border: none; background: none;
-  -webkit-tap-highlight-color: transparent;
-  position: relative;
-}
-.bnav-item:active { opacity: .7; }
-.bnav-icon { font-size: 22px; line-height: 1; transition: transform .2s; }
-.bnav-label {
-  font-size: 10px; font-weight: 600;
-  color: rgba(255,255,255,.45);
-  font-family: 'Sora', sans-serif;
-  letter-spacing: .02em;
-  transition: color .2s;
-}
-.bnav-item.active .bnav-icon { transform: translateY(-2px); }
-.bnav-item.active .bnav-label { color: var(--gold2); }
-.bnav-dot {
-  position: absolute; top: 6px; right: calc(50% - 16px);
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--red); border: 2px solid var(--ink);
-  display: none;
-}
-.bnav-dot.show { display: block; }
+.form-header-img{width:52px;height:52px;border-radius:10px;overflow:hidden;flex-shrink:0;}
+.form-header-img img{width:100%;height:100%;object-fit:cover;display:block;}
+.form-header-text h2{font-family:'Noto Serif TC',serif;color:#fff;font-size:17px;font-weight:700;}
+.form-header-text p{color:rgba(255,255,255,.5);font-size:12px;margin-top:3px;}
+.form-body{padding:16px;}
 
-/* ══ SECTION TITLE ══ */
-.section-title {
-  font-family: 'Noto Serif TC', serif;
-  font-size: 19px; font-weight: 700; color: var(--ink);
-  margin-bottom: 14px;
-  display: flex; align-items: center; gap: 10px;
+/* FORM GRID */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-group.full{grid-column:1/-1;}
+label{font-size:11px;font-weight:700;color:var(--ink3);letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:5px;}
+label .req{color:var(--red);}
+input,select,textarea{
+  font-family:'Sora',sans-serif;font-size:15px;color:var(--ink);
+  background:var(--paper);border:1.5px solid var(--paper3);
+  border-radius:var(--r);padding:11px 13px;
+  transition:border-color .2s,box-shadow .2s;outline:none;
+  -webkit-appearance:none;appearance:none;
 }
-.section-title::before {
-  content: ''; display: block; width: 4px; height: 20px;
-  background: linear-gradient(to bottom, var(--gold), var(--gold2));
-  border-radius: 2px; flex-shrink: 0;
+input:focus,select:focus,textarea:focus{
+  border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,151,58,.15);background:#fff;
 }
+textarea{resize:none;height:80px;}
 
-/* ══ CONFIG NOTICE ══ */
-.config-notice {
-  background: linear-gradient(135deg, #fff8ec, #fff3d4);
-  border: 1.5px solid var(--gold); border-radius: 12px;
-  padding: 12px 14px; margin-bottom: 14px;
-  font-size: 12px; color: var(--ink2);
-  display: flex; align-items: flex-start; gap: 10px;
-  line-height: 1.6;
+/* FIXED NOTIFY SECTION */
+.fixed-section{
+  background:linear-gradient(135deg,#f3eaff,#ede0ff);
+  border:1.5px solid var(--purple);border-radius:12px;
+  padding:14px;margin-top:4px;
 }
-.config-notice .icon { font-size: 18px; flex-shrink: 0; }
-.config-notice code {
-  font-family: 'DM Mono', monospace;
-  background: rgba(200,151,58,.15);
-  padding: 1px 5px; border-radius: 4px; font-size: 11px; color: var(--gold);
-}
+.fixed-section.hidden{display:none;}
+.fixed-label{font-size:11px;font-weight:700;color:var(--purple);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
 
-/* ══ FORM CARD ══ */
-.form-card {
-  background: #fff; border-radius: 16px;
-  box-shadow: var(--sh2); overflow: hidden;
-  margin-bottom: 16px;
+/* TOGGLE SWITCH */
+.toggle-wrap{display:flex;align-items:center;gap:10px;}
+.toggle{position:relative;width:46px;height:26px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{
+  position:absolute;inset:0;background:var(--paper3);
+  border-radius:26px;cursor:pointer;transition:.3s;
 }
-.form-header {
-  background: linear-gradient(135deg, var(--ink) 0%, var(--ink2) 100%);
-  padding: 18px 18px;
-  display: flex; align-items: center; gap: 12px;
+.toggle-slider::before{
+  content:'';position:absolute;height:20px;width:20px;
+  left:3px;bottom:3px;background:#fff;border-radius:50%;
+  transition:.3s;box-shadow:0 1px 4px rgba(0,0,0,.2);
 }
-.form-header-icon { font-size: 26px; }
-.form-header-text h2 {
-  font-family: 'Noto Serif TC', serif;
-  color: #fff; font-size: 17px; font-weight: 700;
-}
-.form-header-text p { color: rgba(255,255,255,.5); font-size: 12px; margin-top: 3px; }
-.form-body { padding: 16px; }
+.toggle input:checked+.toggle-slider{background:var(--gold);}
+.toggle input:checked+.toggle-slider::before{transform:translateX(20px);}
+.toggle-text{font-size:13px;font-weight:600;color:var(--ink2);}
 
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.form-group { display: flex; flex-direction: column; gap: 5px; }
-.form-group.full { grid-column: 1/-1; }
+/* NOTIFY CHIPS */
+.notify-group{display:flex;gap:8px;flex-wrap:wrap;}
+.notify-chip{
+  display:flex;align-items:center;gap:6px;padding:9px 14px;
+  border-radius:24px;border:1.5px solid var(--paper3);cursor:pointer;
+  font-size:13px;font-weight:600;color:var(--ink3);
+  background:var(--paper);transition:all .18s;user-select:none;
+  flex:1;justify-content:center;min-width:80px;
+}
+.notify-chip input{display:none;}
+.notify-chip.checked{border-color:var(--gold);background:linear-gradient(135deg,#fff8ec,#fff3dc);color:var(--gold);box-shadow:0 2px 8px rgba(200,151,58,.2);}
+.notify-chip .dot{width:7px;height:7px;border-radius:50%;background:var(--paper3);transition:background .18s;flex-shrink:0;}
+.notify-chip.checked .dot{background:var(--gold);}
 
-label {
-  font-size: 11px; font-weight: 700; color: var(--ink3);
-  letter-spacing: .06em; text-transform: uppercase;
-  display: flex; align-items: center; gap: 5px;
+/* MULTI SELECT */
+.multi-select-wrap{position:relative;}
+.multi-select-display{
+  border:1.5px solid var(--paper3);border-radius:var(--r);
+  padding:11px 13px;background:var(--paper);cursor:pointer;
+  font-size:14px;color:var(--ink3);
+  display:flex;align-items:center;justify-content:space-between;
+  transition:border-color .2s;min-height:46px;
 }
-label .req { color: var(--red); }
+.multi-select-display.open,.multi-select-display:active{border-color:var(--gold);background:#fff;}
+.ms-tags{display:flex;flex-wrap:wrap;gap:4px;flex:1;}
+.ms-tag{background:var(--ink);color:#fff;padding:2px 8px;border-radius:12px;font-size:12px;font-weight:500;}
+.multi-select-dropdown{
+  display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;
+  background:#fff;border:1.5px solid var(--gold);
+  border-radius:var(--r);box-shadow:var(--sh2);
+  z-index:200;max-height:220px;overflow-y:auto;
+}
+.multi-select-dropdown.open{display:block;}
+.mso{
+  display:flex;align-items:center;gap:10px;padding:12px 14px;
+  cursor:pointer;font-size:14px;transition:background .12s;
+  border-bottom:1px solid var(--paper2);
+}
+.mso:last-child{border-bottom:none;}
+.mso:active,.mso:hover{background:var(--paper);}
+.mso.selected{background:#fff8ec;color:var(--gold);font-weight:600;}
+.mso .check{
+  width:20px;height:20px;border-radius:5px;
+  border:1.5px solid var(--paper3);display:flex;align-items:center;
+  justify-content:center;font-size:11px;flex-shrink:0;
+}
+.mso.selected .check{background:var(--gold);border-color:var(--gold);color:#fff;}
+.ms-role{margin-left:auto;font-size:11px;color:var(--ink3);opacity:.7;}
+.tags-hint{font-size:11px;color:var(--ink3);margin-top:4px;}
 
-input, select, textarea {
-  font-family: 'Sora', sans-serif; font-size: 15px; color: var(--ink);
-  background: var(--paper); border: 1.5px solid var(--paper3);
-  border-radius: var(--r); padding: 11px 13px;
-  transition: border-color .2s, box-shadow .2s; outline: none;
-  -webkit-appearance: none; appearance: none;
+/* SUBMIT */
+.btn-submit{
+  width:100%;padding:15px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:var(--ink);font-family:'Sora',sans-serif;
+  font-size:15px;font-weight:700;letter-spacing:.02em;
+  border:none;border-radius:12px;cursor:pointer;margin-top:18px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 4px 16px rgba(200,151,58,.32);
+  transition:all .22s;-webkit-appearance:none;
 }
-input:focus, select:focus, textarea:focus {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(200,151,58,.15);
-  background: #fff;
-}
-textarea { resize: none; height: 80px; }
+.btn-submit:active{transform:scale(.97);}
+.btn-submit:disabled{opacity:.5;}
 
-/* ── Notify chips ── */
-.notify-group { display: flex; gap: 8px; flex-wrap: wrap; }
-.notify-chip {
-  display: flex; align-items: center; gap: 6px;
-  padding: 9px 14px; border-radius: 24px;
-  border: 1.5px solid var(--paper3); cursor: pointer;
-  font-size: 13px; font-weight: 600; color: var(--ink3);
-  background: var(--paper); transition: all .18s; user-select: none;
-  flex: 1; justify-content: center; min-width: 80px;
+/* TOAST */
+.toast-wrap{position:fixed;bottom:calc(16px + var(--sab));left:14px;right:14px;z-index:999;display:flex;flex-direction:column;gap:6px;pointer-events:none;}
+.toast{
+  background:var(--ink);color:#fff;padding:12px 16px;border-radius:12px;
+  font-size:13px;box-shadow:var(--sh2);display:flex;align-items:center;gap:10px;
+  animation:toastIn .28s ease;pointer-events:auto;
 }
-.notify-chip input { display: none; }
-.notify-chip.checked {
-  border-color: var(--gold);
-  background: linear-gradient(135deg, #fff8ec, #fff3dc);
-  color: var(--gold); box-shadow: 0 2px 8px rgba(200,151,58,.2);
-}
-.notify-chip .dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: var(--paper3); transition: background .18s; flex-shrink: 0;
-}
-.notify-chip.checked .dot { background: var(--gold); }
+.toast.success{border-left:4px solid var(--green);}
+.toast.error{border-left:4px solid var(--red);}
+.toast.info{border-left:4px solid var(--gold);}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateY(12px)}}
 
-/* ── Multi-select ── */
-.multi-select-wrap { position: relative; }
-.multi-select-display {
-  border: 1.5px solid var(--paper3); border-radius: var(--r);
-  padding: 11px 13px; background: var(--paper); cursor: pointer;
-  font-size: 14px; color: var(--ink3);
-  display: flex; align-items: center; justify-content: space-between;
-  transition: border-color .2s; min-height: 46px;
+/* MODAL */
+.modal-backdrop{
+  display:none;position:fixed;inset:0;
+  background:rgba(15,17,23,.55);z-index:300;
+  align-items:flex-end;justify-content:center;
+  backdrop-filter:blur(4px);
 }
-.multi-select-display.open, .multi-select-display:active {
-  border-color: var(--gold); background: #fff;
+.modal-backdrop.open{display:flex;animation:fadeIn .2s;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:#fff;border-radius:20px 20px 0 0;
+  padding:24px 20px calc(20px + var(--sab));
+  width:100%;max-width:520px;
+  box-shadow:0 -8px 40px rgba(0,0,0,.2);
+  animation:slideUp .28s ease;
 }
-.ms-tags { display: flex; flex-wrap: wrap; gap: 4px; flex: 1; }
-.ms-tag {
-  background: var(--ink); color: #fff;
-  padding: 2px 8px; border-radius: 12px;
-  font-size: 12px; font-weight: 500;
-}
-.multi-select-dropdown {
-  display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-  background: #fff; border: 1.5px solid var(--gold);
-  border-radius: var(--r); box-shadow: var(--sh2);
-  z-index: 200; max-height: 220px; overflow-y: auto;
-}
-.multi-select-dropdown.open { display: block; }
-.multi-select-option {
-  display: flex; align-items: center; gap: 10px;
-  padding: 12px 14px; cursor: pointer; font-size: 14px;
-  transition: background .12s; border-bottom: 1px solid var(--paper2);
-}
-.multi-select-option:last-child { border-bottom: none; }
-.multi-select-option:active, .multi-select-option:hover { background: var(--paper); }
-.multi-select-option.selected { background: #fff8ec; color: var(--gold); font-weight: 600; }
-.multi-select-option .check {
-  width: 20px; height: 20px; border-radius: 5px;
-  border: 1.5px solid var(--paper3); display: flex; align-items: center;
-  justify-content: center; font-size: 11px; flex-shrink: 0;
-}
-.multi-select-option.selected .check { background: var(--gold); border-color: var(--gold); color: #fff; }
-.ms-role { margin-left: auto; font-size: 11px; color: var(--ink3); opacity: .7; }
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
+.modal-handle{width:36px;height:4px;border-radius:2px;background:var(--paper3);margin:0 auto 16px;}
+.modal h3{font-family:'Noto Serif TC',serif;font-size:17px;margin-bottom:6px;}
+.modal p{font-size:13px;color:var(--ink3);line-height:1.7;margin-bottom:18px;}
+.modal-btns{display:flex;gap:10px;}
+.btn-cancel{flex:1;background:var(--paper);border:1.5px solid var(--paper3);border-radius:10px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Sora',sans-serif;}
+.btn-confirm{flex:2;background:var(--green);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Sora',sans-serif;}
 
-.tags-hint { font-size: 11px; color: var(--ink3); margin-top: 4px; }
-
-/* ── Submit btn ── */
-.btn-submit {
-  width: 100%; padding: 15px;
-  background: linear-gradient(135deg, var(--gold), var(--gold2));
-  color: var(--ink); font-family: 'Sora', sans-serif;
-  font-size: 15px; font-weight: 700; letter-spacing: .02em;
-  border: none; border-radius: 12px; cursor: pointer; margin-top: 18px;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  box-shadow: 0 4px 16px rgba(200,151,58,.32);
-  transition: all .22s; -webkit-appearance: none;
+/* SCRIPT URL PROMPT */
+.script-prompt{
+  background:var(--ink);color:#fff;border-radius:14px;
+  padding:20px;margin-bottom:14px;
 }
-.btn-submit:active { transform: scale(.97); box-shadow: 0 2px 8px rgba(200,151,58,.2); }
-.btn-submit:disabled { opacity: .5; }
-
-/* ══ STATS ══ */
-.stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-.stat-card {
-  background: #fff; border-radius: 12px; padding: 14px 14px 12px;
-  box-shadow: var(--sh); border-left: 4px solid transparent; position: relative; overflow: hidden;
+.script-prompt h3{font-family:'Noto Serif TC',serif;font-size:16px;margin-bottom:8px;color:var(--gold2);}
+.script-prompt p{font-size:12px;color:rgba(255,255,255,.6);margin-bottom:12px;line-height:1.7;}
+.script-prompt input{
+  font-family:'DM Mono',monospace;font-size:12px;
+  background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.2);
+  color:#fff;border-radius:8px;padding:10px 12px;width:100%;outline:none;
 }
-.stat-card::after {
-  content: attr(data-icon); position: absolute; right: 10px; top: 8px;
-  font-size: 24px; opacity: .1;
+.script-prompt input::placeholder{color:rgba(255,255,255,.3);}
+.script-prompt input:focus{border-color:var(--gold2);}
+.prompt-btns{display:flex;gap:8px;margin-top:10px;}
+.btn-save-url{
+  flex:2;background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:var(--ink);border:none;border-radius:8px;padding:10px;
+  font-size:13px;font-weight:700;cursor:pointer;font-family:'Sora',sans-serif;
 }
-.stat-card.gold  { border-left-color: var(--gold); }
-.stat-card.green { border-left-color: var(--green); }
-.stat-card.blue  { border-left-color: var(--blue); }
-.stat-card.red   { border-left-color: var(--red); }
-.stat-num { font-family: 'DM Mono', monospace; font-size: 28px; font-weight: 500; color: var(--ink); }
-.stat-label { font-size: 11px; color: var(--ink3); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
-
-/* ══ LIST VIEW (mobile-first cards instead of table) ══ */
-.event-list { display: flex; flex-direction: column; gap: 10px; }
-.event-card {
-  background: #fff; border-radius: 12px;
-  box-shadow: var(--sh); overflow: hidden;
-  border-left: 4px solid var(--paper3);
-  transition: box-shadow .2s;
+.btn-skip{
+  flex:1;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);
+  border:none;border-radius:8px;padding:10px;
+  font-size:12px;cursor:pointer;font-family:'Sora',sans-serif;
 }
-.event-card.today  { border-left-color: var(--red); }
-.event-card.week   { border-left-color: var(--green); }
-.event-card.coming { border-left-color: var(--blue); }
-.event-card.past   { border-left-color: var(--paper3); opacity: .7; }
-.event-card-body { padding: 12px 14px; }
-.event-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-.event-date { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--ink3); font-weight: 500; }
-.badge {
-  display: inline-flex; align-items: center;
-  padding: 2px 8px; border-radius: 20px;
-  font-size: 11px; font-weight: 700;
-}
-.badge-type   { background: #eee6d0; color: #7a5c1e; }
-.badge-today  { background: #fde8e7; color: var(--red); }
-.badge-week   { background: #e8f5ee; color: var(--green); }
-.badge-coming { background: #e8eef8; color: var(--blue); }
-.badge-past   { background: var(--paper2); color: var(--ink3); }
-.event-title { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 5px; }
-.event-meta { font-size: 12px; color: var(--ink3); display: flex; flex-wrap: wrap; gap: 8px; }
-.event-meta span { display: flex; align-items: center; gap: 3px; }
-.event-footer {
-  padding: 8px 14px; background: var(--paper);
-  border-top: 1px solid var(--paper2);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.notify-dots { display: flex; gap: 4px; }
-.ndot {
-  width: 20px; height: 20px; border-radius: 50%;
-  font-size: 8px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-}
-.ndot.on   { background: var(--gold); color: var(--ink); }
-.ndot.off  { background: var(--paper2); color: var(--ink3); }
-.ndot.sent { background: var(--green); color: #fff; }
-
-/* ── Search & Filter ── */
-.search-bar {
-  display: flex; align-items: center; gap: 8px;
-  background: #fff; border-radius: 10px; padding: 10px 14px;
-  box-shadow: var(--sh); margin-bottom: 10px;
-  border: 1.5px solid var(--paper3);
-}
-.search-bar input {
-  border: none; background: none; padding: 0;
-  font-size: 14px; flex: 1; outline: none; box-shadow: none;
-}
-.filter-row {
-  display: flex; gap: 6px; overflow-x: auto; margin-bottom: 12px;
-  padding-bottom: 2px; scrollbar-width: none;
-}
-.filter-row::-webkit-scrollbar { display: none; }
-.filter-btn {
-  white-space: nowrap;
-  background: #fff; border: 1.5px solid var(--paper3);
-  border-radius: 20px; padding: 6px 14px;
-  font-size: 12px; font-weight: 600; color: var(--ink3);
-  cursor: pointer; font-family: 'Sora', sans-serif;
-  transition: all .15s; flex-shrink: 0;
-}
-.filter-btn.active { border-color: var(--gold); color: var(--gold); background: #fff8ec; }
-.btn-refresh-sm {
-  background: var(--ink); color: #fff; border: none;
-  border-radius: 8px; padding: 7px 12px;
-  font-size: 12px; font-weight: 600; cursor: pointer;
-  font-family: 'Sora', sans-serif; flex-shrink: 0;
-  display: flex; align-items: center; gap: 4px;
-}
-
-/* ══ SETTINGS ══ */
-.settings-group { display: flex; flex-direction: column; gap: 12px; }
-.settings-card {
-  background: #fff; border-radius: 14px; box-shadow: var(--sh); overflow: hidden;
-}
-.settings-card-header {
-  padding: 13px 16px; border-bottom: 1px solid var(--paper2);
-  font-weight: 700; font-size: 14px;
-  display: flex; align-items: center; gap: 8px;
-}
-.settings-card-body { padding: 14px 16px; }
-.settings-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 9px 0; border-bottom: 1px solid var(--paper2); font-size: 13px; gap: 8px;
-}
-.settings-row:last-child { border-bottom: none; }
-.settings-row label {
-  font-size: 13px; color: var(--ink2);
-  text-transform: none; letter-spacing: 0; font-weight: 400; flex-shrink: 0;
-}
-.settings-input {
-  font-family: 'DM Mono', monospace; font-size: 12px;
-  padding: 7px 10px; border-radius: 8px;
-  border: 1.5px solid var(--paper3);
-  background: var(--paper); color: var(--ink);
-  min-width: 0; flex: 1; max-width: 200px;
-}
-.settings-input.full { max-width: 100%; width: 100%; display: block; margin-top: 6px; }
-.settings-input:focus { border-color: var(--gold); outline: none; }
-
-.people-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.people-table th, .people-table td {
-  padding: 7px 8px; border-bottom: 1px solid var(--paper2); text-align: left;
-}
-.people-table th {
-  font-size: 10px; text-transform: uppercase; letter-spacing: .06em;
-  color: var(--ink3); background: none; border-bottom: 2px solid var(--paper2);
-}
-.id-cell { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--blue); }
-.btn-add-row {
-  background: none; border: 1.5px dashed var(--paper3);
-  border-radius: 8px; width: 100%; padding: 10px;
-  font-size: 12px; color: var(--ink3); cursor: pointer; margin-top: 8px;
-  font-family: 'Sora', sans-serif; transition: all .18s;
-}
-.btn-add-row:active { border-color: var(--gold); color: var(--gold); background: #fff8ec; }
-.btn-del { background: none; border: none; color: var(--red); cursor: pointer; font-size: 16px; opacity: .5; padding: 0 4px; }
-
-.btn-save {
-  background: linear-gradient(135deg, var(--gold), var(--gold2));
-  color: var(--ink); font-family: 'Sora', sans-serif;
-  font-size: 13px; font-weight: 700; border: none; border-radius: 8px;
-  padding: 10px 20px; cursor: pointer; margin-top: 12px;
-  transition: all .18s; -webkit-appearance: none;
-}
-.btn-save:active { transform: scale(.97); }
-.btn-save.dark { background: var(--ink); color: #fff; margin-left: 6px; }
-
-/* ══ TOAST ══ */
-.toast-wrap {
-  position: fixed; bottom: calc(var(--nav-h) + var(--sab) + 12px);
-  left: 14px; right: 14px; z-index: 999;
-  display: flex; flex-direction: column; gap: 6px; pointer-events: none;
-}
-.toast {
-  background: var(--ink); color: #fff;
-  padding: 12px 16px; border-radius: 12px;
-  font-size: 13px; box-shadow: var(--sh2);
-  display: flex; align-items: center; gap: 10px;
-  animation: toastIn .28s ease; pointer-events: auto;
-}
-.toast.success { border-left: 4px solid var(--green); }
-.toast.error   { border-left: 4px solid var(--red); }
-.toast.info    { border-left: 4px solid var(--gold); }
-@keyframes toastIn  { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
-@keyframes toastOut { to   { opacity:0; transform:translateY(12px); } }
-
-/* ══ MODAL ══ */
-.modal-backdrop {
-  display: none; position: fixed; inset: 0;
-  background: rgba(15,17,23,.55); z-index: 300;
-  align-items: flex-end; justify-content: center;
-  backdrop-filter: blur(4px);
-}
-.modal-backdrop.open { display: flex; animation: fadeIn .2s; }
-@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-.modal {
-  background: #fff; border-radius: 20px 20px 0 0;
-  padding: 24px 20px calc(20px + var(--sab));
-  width: 100%; max-width: 520px;
-  box-shadow: 0 -8px 40px rgba(0,0,0,.2);
-  animation: slideUp .28s ease;
-}
-@keyframes slideUp { from { transform:translateY(100%); } to { transform:none; } }
-.modal-handle {
-  width: 36px; height: 4px; border-radius: 2px;
-  background: var(--paper3); margin: 0 auto 16px;
-}
-.modal h3 { font-family: 'Noto Serif TC', serif; font-size: 17px; margin-bottom: 6px; }
-.modal p  { font-size: 13px; color: var(--ink3); line-height: 1.7; margin-bottom: 18px; }
-.modal-btns { display: flex; gap: 10px; }
-.btn-cancel  {
-  flex: 1; background: var(--paper); border: 1.5px solid var(--paper3);
-  border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 600;
-  cursor: pointer; font-family: 'Sora', sans-serif;
-}
-.btn-confirm {
-  flex: 2; background: var(--green); color: #fff; border: none;
-  border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 700;
-  cursor: pointer; font-family: 'Sora', sans-serif;
-}
-
-/* ══ INSTALL PROMPT ══ */
-.install-banner {
-  position: fixed; top: calc(var(--header-h) + var(--sat) + 10px);
-  left: 14px; right: 14px; z-index: 150;
-  background: var(--ink); color: #fff;
-  border-radius: 14px; padding: 14px 16px;
-  display: flex; align-items: center; gap: 12px;
-  box-shadow: 0 8px 32px rgba(0,0,0,.35);
-  animation: slideDown .3s ease;
-}
-@keyframes slideDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:none; } }
-.install-banner.hidden { display: none; }
-.install-banner-text { flex: 1; }
-.install-banner-text strong { font-size: 13px; font-weight: 700; display: block; margin-bottom: 2px; }
-.install-banner-text span { font-size: 11px; color: rgba(255,255,255,.6); }
-.install-btn {
-  background: linear-gradient(135deg, var(--gold), var(--gold2));
-  color: var(--ink); border: none; border-radius: 8px;
-  padding: 8px 14px; font-size: 12px; font-weight: 700;
-  cursor: pointer; white-space: nowrap; font-family: 'Sora', sans-serif;
-}
-.install-close {
-  background: none; border: none; color: rgba(255,255,255,.5);
-  font-size: 18px; cursor: pointer; padding: 0 2px;
-}
-
-/* ══ EMPTY ══ */
-.empty-state { text-align: center; padding: 48px 20px; color: var(--ink3); }
-.empty-state .icon { font-size: 48px; opacity: .3; margin-bottom: 10px; }
-.empty-state p { font-size: 14px; }
-
-/* ══ SPINNER ══ */
-.spinner {
-  display: inline-block; width: 18px; height: 18px;
-  border: 2px solid var(--paper3); border-top-color: var(--gold);
-  border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-right: 6px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── PWA install instructions for iOS ── */
-.ios-guide {
-  background: var(--paper); border-radius: 12px;
-  padding: 14px 16px; margin-top: 12px;
-  border: 1.5px solid var(--paper3);
-  font-size: 12px; line-height: 1.8; color: var(--ink2);
-  display: none;
-}
-.ios-guide.show { display: block; }
-.ios-guide strong { color: var(--ink); }
-
-/* ══ LOCK OVERLAY ══ */
-.lock-overlay {
-  position: fixed; inset: 0; z-index: 500;
-  background: var(--ink);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 32px 24px calc(32px + var(--sab));
-  transition: opacity .3s;
-}
-.lock-overlay.hidden { opacity: 0; pointer-events: none; }
-.lock-logo {
-  width: 76px; height: 76px; border-radius: 18px;
-  overflow: hidden; margin-bottom: 20px;
-  box-shadow: 0 8px 32px rgba(0,0,0,.5);
-  flex-shrink: 0;
-}
-.lock-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.lock-title {
-  font-family: 'Noto Serif TC', serif;
-  font-size: 22px; font-weight: 700; color: #fff;
-  margin-bottom: 4px; letter-spacing: .04em;
-}
-.lock-sub {
-  font-size: 11px; color: rgba(255,255,255,.35);
-  font-family: 'DM Mono', monospace;
-  letter-spacing: .12em; text-transform: uppercase;
-  margin-bottom: 32px;
-}
-.lock-card {
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 18px; padding: 22px 20px;
-  width: 100%; max-width: 340px;
-}
-.lock-label {
-  font-size: 11px; font-weight: 700; color: rgba(255,255,255,.45);
-  letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px;
-}
-.lock-input-wrap {
-  display: flex; align-items: center;
-  background: rgba(255,255,255,.08);
-  border: 1.5px solid rgba(255,255,255,.14);
-  border-radius: 10px; overflow: hidden;
-  transition: border-color .2s;
-}
-.lock-input-wrap:focus-within { border-color: var(--gold); }
-.lock-input {
-  flex: 1; background: none; border: none; outline: none;
-  font-family: 'DM Mono', monospace; font-size: 20px;
-  letter-spacing: .35em; color: #fff; padding: 13px 16px;
-  caret-color: var(--gold);
-}
-.lock-eye {
-  background: none; border: none; color: rgba(255,255,255,.35);
-  font-size: 18px; padding: 13px 14px; cursor: pointer;
-  transition: color .2s; flex-shrink: 0;
-}
-.lock-eye:active { color: #fff; }
-.lock-btn {
-  width: 100%; margin-top: 14px;
-  background: linear-gradient(135deg, var(--gold), var(--gold2));
-  color: var(--ink); font-family: 'Sora', sans-serif;
-  font-size: 15px; font-weight: 700;
-  border: none; border-radius: 10px; padding: 14px;
-  cursor: pointer; transition: all .18s; letter-spacing: .02em;
-}
-.lock-btn:active { transform: scale(.97); }
-.lock-error {
-  color: #ff6b6b; font-size: 12px; margin-top: 10px;
-  text-align: center; min-height: 18px;
-}
-.lock-error.shake { animation: shake .35s ease; }
-@keyframes shake {
-  0%,100%{transform:none} 20%{transform:translateX(-7px)}
-  40%{transform:translateX(7px)} 60%{transform:translateX(-4px)}
-  80%{transform:translateX(4px)}
-}
-.lock-hint { font-size: 11px; color: rgba(255,255,255,.2); text-align:center; margin-top:16px; line-height:1.8; }
-.bnav-item.locked { position: relative; }
-.bnav-item.locked .bnav-label::after { content: ' 🔒'; font-size: 9px; }
 </style>
 </head>
 <body>
 
-<!-- TOP HEADER -->
+<!-- HEADER -->
 <div class="app-header">
   <div class="header-inner">
-    <div class="logo-icon" style="background:none;padding:0;overflow:hidden">
-      <img src="./icon-192.png" style="width:32px;height:32px;border-radius:7px;display:block;object-fit:cover" onerror="this.style.display='none';this.parentElement.innerHTML='🏢'">
+    <div class="logo-icon">
+      <img src="./icon-192.png" alt="華森" onerror="this.src='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAAgACADASIAAhEBAxEB/8QAGQAAAwADAAAAAAAAAAAAAAAAAwYHAQIF/8QAMBAAAQMCBQIBDAMAAAAAAAAAAQIDBAUGAAcREiETMQgUFRgiN0FWdJGStNMWYYH/xAAXAQEBAQEAAAAAAAAAAAAAAAAABgUH/8QAIxEAAgICAAUFAAAAAAAAAAAAAQIDBABBERIxUZFyc6HR4f/aAAwDAQACEQMRAD8ABnPnNfFrZp3JSKPcsum0uE+2zGiR2mQ20joNHakdPtqT9cJfpC5k/GdR+xj9eM+IX223h823+O1ieY5Vdu2UsyKsjABjs98q4YYjEpKjoNZQvSFzJ+M6j9jH68OuSuc98XRmva9IrFyy6lS5spTMmJIaZU26gsuEpUOn24H0xEU0yYtxpCYchS3WjIbSGVEraAJKwNOU6JUdw49U88HD/wCHuM81nXYjy2XEMvTllpxSCEuANOg7T2Oh4OnY4U7lprMatIxHMNnuMTQxCNiFHQ6wXiF9tt4fNt/jtYn7BQl9supUtoLBWlCtpKdeQDzodPfi5Zz5NXtdOadyVej25JqVLmvtvRpcd5gtuo6DQ3Alwe8Ef5hM9HzMkdrOn6/26x+zC7SstakZY2ILHR74hmiESgsOg3lfplYsk3VaYTbVdS4cupK0L8/tkNxvIqhq0R5L6yykLG/UAFQO07SCCyKjbMqu+H9NIodTp7ynaiWFTKuiSlloSH96SAwjepSuQrVISONFd8dKDYLsW5LdmuWhfa4lOtF23JIbjU3qOPLZeZ6resvQI2yXFaK51Qge86bWTl5UKXWcnj/G7ip6rWXLFWqFXEJqGG3S68VoKJC1japW3QjkEHjtikhin5xxTY17f0fGZzvHyng3z6vzzn//2Q=='">
     </div>
     <div>
       <div class="logo-text">華森行程通報</div>
-      <div class="logo-sub">Schedule Notification · v5</div>
+      <div class="logo-sub">Schedule Notification · v6</div>
     </div>
-    <div class="header-actions">
-      <button class="hbtn" onclick="showInstallGuide()" title="安裝APP">📲</button>
-    </div>
+    <div class="header-badge" id="syncBadge">●</div>
   </div>
 </div>
-
-<!-- INSTALL BANNER -->
-<div class="install-banner hidden" id="installBanner">
-  <span style="font-size:28px">📲</span>
-  <div class="install-banner-text">
-    <strong>安裝到主畫面</strong>
-    <span>像 APP 一樣使用，離線也可開啟</span>
-  </div>
-  <button class="install-btn" id="installBtn" onclick="doInstall()">安裝</button>
-  <button class="install-close" onclick="dismissInstall()">✕</button>
-</div>
-
 
 <!-- TOAST -->
 <div class="toast-wrap" id="toastWrap"></div>
-
 
 <!-- CONFIRM MODAL -->
 <div class="modal-backdrop" id="confirmModal">
   <div class="modal">
     <div class="modal-handle"></div>
     <h3>確認送出</h3>
-    <p>確定要送出這筆行程通報嗎？送出後將立即通知負責人，並依設定時機自動發送 LINE 群組通知。</p>
+    <p>確定要送出這筆行程通報嗎？送出後將立即通知鄭惠方與林香君，並依設定時機自動發送 LINE 通知。</p>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeModal()">取消</button>
       <button class="btn-confirm" onclick="confirmSubmit()">✓ 確認送出</button>
@@ -700,603 +295,357 @@ textarea { resize: none; height: 80px; }
   </div>
 </div>
 
+<!-- MAIN -->
+<div class="app-main">
 
-<!-- MAIN SCROLL -->
-<div class="app-main" id="appMain">
-
-  <!-- ── PAGE: FORM ── -->
-  <div class="page active" id="page-form">
-  <div class="container">
-
-    <div class="config-notice" id="configNotice">
-      <span class="icon">⚠️</span>
-      <div>請先至<strong>系統設定</strong>填入 Google Apps Script Web App 網址。<br>
-      <code>SCRIPT_URL</code> 從 Apps Script 部署後取得。</div>
+  <!-- Script URL 設定 -->
+  <div class="script-prompt" id="scriptPrompt">
+    <h3>🔗 設定 Google Apps Script 網址</h3>
+    <p>第一次使用請填入 Apps Script 部署後的 Web App URL，之後會自動記住，不需重複輸入。</p>
+    <input type="url" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
+    <div class="prompt-btns">
+      <button class="btn-save-url" onclick="saveScriptUrl()">💾 儲存並連線</button>
+      <button class="btn-skip" onclick="skipPrompt()">暫時略過</button>
     </div>
+  </div>
 
-    <div class="form-card">
-      <div class="form-header">
-        <div class="form-header-icon" style="display:flex;align-items:center;justify-content:center;padding:0">
-          <img src="data:image/jpeg;base64,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" style="width:52px;height:52px;border-radius:10px;object-fit:cover;display:block;flex-shrink:0">
-        </div>
-        <div class="form-header-text">
-          <h2>新增行程通報</h2>
-          <p>送出後立即通知負責人，並依時機自動提醒</p>
-        </div>
+  <!-- Loading bar -->
+  <div class="loading-bar" id="loadingBar" style="display:none">
+    <span class="spinner" id="loadSpinner"></span>
+    <span id="loadText">正在從 Google Sheets 讀取最新名單…</span>
+  </div>
+
+  <!-- FORM -->
+  <div class="form-card" id="formCard">
+    <div class="form-header">
+      <div class="form-header-img">
+        <img src="./icon-192.png" alt="華森" onerror="this.src='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAAgACADASIAAhEBAxEB/8QAGQAAAwADAAAAAAAAAAAAAAAAAwYHAQIF/8QAMBAAAQMCBQIBDAMAAAAAAAAAAQIDBAUGAAcREiETMQgUFRgiN0FWdJGStNMWYYH/xAAXAQEBAQEAAAAAAAAAAAAAAAAABgUH/8QAIxEAAgICAAUFAAAAAAAAAAAAAQIDBABBERIxUZFyc6HR4f/aAAwDAQACEQMRAD8ABnPnNfFrZp3JSKPcsum0uE+2zGiR2mQ20joNHakdPtqT9cJfpC5k/GdR+xj9eM+IX223h823+O1ieY5Vdu2UsyKsjABjs98q4YYjEpKjoNZQvSFzJ+M6j9jH68OuSuc98XRmva9IrFyy6lS5spTMmJIaZU26gsuEpUOn24H0xEU0yYtxpCYchS3WjIbSGVEraAJKwNOU6JUdw49U88HD/wCHuM81nXYjy2XEMvTllpxSCEuANOg7T2Oh4OnY4U7lprMatIxHMNnuMTQxCNiFHQ6wXiF9tt4fNt/jtYn7BQl9supUtoLBWlCtpKdeQDzodPfi5Zz5NXtdOadyVej25JqVLmvtvRpcd5gtuo6DQ3Alwe8Ef5hM9HzMkdrOn6/26x+zC7SstakZY2ILHR74hmiESgsOg3lfplYsk3VaYTbVdS4cupK0L8/tkNxvIqhq0R5L6yykLG/UAFQO07SCCyKjbMqu+H9NIodTp7ynaiWFTKuiSlloSH96SAwjepSuQrVISONFd8dKDYLsW5LdmuWhfa4lOtF23JIbjU3qOPLZeZ6resvQI2yXFaK51Qge86bWTl5UKXWcnj/G7ip6rWXLFWqFXEJqGG3S68VoKJC1japW3QjkEHjtikhin5xxTY17f0fGZzvHyng3z6vzzn//2Q=='">
       </div>
-      <div class="form-body">
-        <form id="scheduleForm" onsubmit="handleSubmit(event)">
-          <div class="form-grid">
+      <div class="form-header-text">
+        <h2>新增行程通報</h2>
+        <p>送出後即時通知負責人，並依設定時機自動提醒</p>
+      </div>
+    </div>
+    <div class="form-body">
+      <form id="scheduleForm" onsubmit="handleSubmit(event)">
+        <div class="form-grid">
 
-            <div class="form-group">
-              <label>📅 行程日期 <span class="req">*</span></label>
-              <input type="date" id="f_date" required>
-            </div>
+          <div class="form-group">
+            <label>📅 行程日期 <span class="req">*</span></label>
+            <input type="date" id="f_date" required>
+          </div>
 
-            <div class="form-group">
-              <label>🏷️ 行程類型 <span class="req">*</span></label>
-              <select id="f_type" required>
-                <option value="">請選擇</option>
-                <option>會議</option><option>教育訓練</option><option>客戶拜訪</option>
-                <option>內部活動</option><option>節日提醒</option><option>案場參訪</option>
-                <option>公司聚餐</option><option>典禮儀式</option><option>公司旅遊</option>
-                <option>展覽參訪</option><option>廠商拜訪</option><option>聚餐活動</option>
-                <option>外部活動</option><option>廠商邀約</option><option>其他</option>
-              </select>
-            </div>
+          <div class="form-group">
+            <label>🏷️ 行程類型 <span class="req">*</span></label>
+            <select id="f_type" required>
+              <option value="">請選擇</option>
+              <option>會議</option><option>教育訓練</option><option>客戶拜訪</option>
+              <option>內部活動</option><option>節日提醒</option><option>案場參訪</option>
+              <option>公司聚餐</option><option>典禮儀式</option><option>公司旅遊</option>
+              <option>展覽參訪</option><option>廠商拜訪</option><option>聚餐活動</option>
+              <option>外部活動</option><option>廠商邀約</option><option>其他</option>
+            </select>
+          </div>
 
-            <div class="form-group full">
-              <label>📝 行程主題 <span class="req">*</span></label>
-              <input type="text" id="f_title" placeholder="例：Q2 策略規劃會議" required>
-            </div>
+          <div class="form-group full">
+            <label>📝 行程主題 <span class="req">*</span></label>
+            <input type="text" id="f_title" placeholder="例：Q2 策略規劃會議" required>
+          </div>
 
-            <div class="form-group">
-              <label>🕐 開始時間</label>
-              <input type="time" id="f_time_start">
-            </div>
-            <div class="form-group">
-              <label>🕔 結束時間</label>
-              <input type="time" id="f_time_end">
-            </div>
+          <div class="form-group">
+            <label>🕐 開始時間</label>
+            <input type="time" id="f_time_start">
+          </div>
+          <div class="form-group">
+            <label>🕔 結束時間</label>
+            <input type="time" id="f_time_end">
+          </div>
 
-            <div class="form-group full">
-              <label>📍 地點 / 連結</label>
-              <input type="text" id="f_location" placeholder="例：台南總部 3F / Google Meet">
-            </div>
+          <div class="form-group full">
+            <label>📍 地點 / 連結</label>
+            <input type="text" id="f_location" placeholder="例：台南總部 3F / Google Meet">
+          </div>
 
-            <div class="form-group full">
-              <label>👥 共同參與人員</label>
-              <div class="multi-select-wrap">
-                <div class="multi-select-display" id="peopleDisplay" onclick="togglePeopleDropdown()">
-                  <div class="ms-tags" id="peopleTags"><span style="color:var(--ink3);font-size:14px">請選擇參與人員</span></div>
-                  <span>▾</span>
-                </div>
-                <div class="multi-select-dropdown" id="peopleDropdown"></div>
+          <div class="form-group full">
+            <label>👥 共同參與人員</label>
+            <div class="multi-select-wrap">
+              <div class="multi-select-display" id="peopleDisplay" onclick="toggleMS('people')">
+                <div class="ms-tags" id="peopleTags"><span style="color:var(--ink3);font-size:14px">請選擇參與人員</span></div>
+                <span>▾</span>
               </div>
-              <div class="tags-hint">可複選，已選人員將收到個人 LINE 通知</div>
+              <div class="multi-select-dropdown" id="peopleDropdown"></div>
             </div>
+            <div class="tags-hint">可複選，系統將查找對應 LINE ID 發送個人通知</div>
+          </div>
 
-            <div class="form-group full">
-              <label>📣 通知群組</label>
-              <div class="multi-select-wrap">
-                <div class="multi-select-display" id="groupDisplay" onclick="toggleGroupDropdown()">
-                  <div class="ms-tags" id="groupTags"><span style="color:var(--ink3);font-size:14px">請選擇群組</span></div>
-                  <span>▾</span>
-                </div>
-                <div class="multi-select-dropdown" id="groupDropdown"></div>
+          <div class="form-group full">
+            <label>📣 通知群組</label>
+            <div class="multi-select-wrap">
+              <div class="multi-select-display" id="groupDisplay" onclick="toggleMS('group')">
+                <div class="ms-tags" id="groupTags"><span style="color:var(--ink3);font-size:14px">請選擇群組</span></div>
+                <span>▾</span>
+              </div>
+              <div class="multi-select-dropdown" id="groupDropdown"></div>
+            </div>
+          </div>
+
+          <!-- 固定通知切換 -->
+          <div class="form-group full">
+            <label>🔁 固定通知（每年重複）</label>
+            <div class="toggle-wrap">
+              <label class="toggle">
+                <input type="checkbox" id="f_fixed" onchange="toggleFixedSection()">
+                <span class="toggle-slider"></span>
+              </label>
+              <span class="toggle-text" id="fixedToggleText">關閉</span>
+            </div>
+          </div>
+
+          <!-- 固定通知設定區 -->
+          <div class="form-group full fixed-section hidden" id="fixedSection">
+            <div class="fixed-label">🗓 固定通知設定</div>
+            <div class="form-grid" style="margin-top:0">
+              <div class="form-group">
+                <label>📅 固定日期（月/日）</label>
+                <input type="text" id="f_fixed_date" placeholder="例：5/1　或　12/25">
+              </div>
+              <div class="form-group">
+                <label style="color:var(--purple)">📌 說明</label>
+                <input type="text" value="每年此日期自動重送" readonly style="background:#f3eaff;color:var(--purple);font-size:12px;">
               </div>
             </div>
+          </div>
 
-            <div class="form-group full">
-              <label>🔔 通知時機（可複選）</label>
-              <div class="notify-group">
-                <label class="notify-chip" id="chip7" onclick="toggleChip('chip7','n_7day')">
-                  <input type="checkbox" id="n_7day"><span class="dot"></span>提前 7 天
-                </label>
-                <label class="notify-chip checked" id="chip1" onclick="toggleChip('chip1','n_1day')">
-                  <input type="checkbox" id="n_1day" checked><span class="dot"></span>提前 1 天
-                </label>
-                <label class="notify-chip checked" id="chipD" onclick="toggleChip('chipD','n_day')">
-                  <input type="checkbox" id="n_day" checked><span class="dot"></span>當天
-                </label>
-              </div>
+          <!-- 通知時機 -->
+          <div class="form-group full">
+            <label>🔔 通知時機（可複選）</label>
+            <div class="notify-group">
+              <label class="notify-chip" id="chip7" onclick="toggleChip('chip7','n_7day')">
+                <input type="checkbox" id="n_7day"><span class="dot"></span>提前 7 天
+              </label>
+              <label class="notify-chip checked" id="chip1" onclick="toggleChip('chip1','n_1day')">
+                <input type="checkbox" id="n_1day" checked><span class="dot"></span>提前 1 天
+              </label>
+              <label class="notify-chip checked" id="chipD" onclick="toggleChip('chipD','n_day')">
+                <input type="checkbox" id="n_day" checked><span class="dot"></span>當天
+              </label>
             </div>
-
-            <div class="form-group full">
-              <label>💬 備註</label>
-              <textarea id="f_note" placeholder="其他補充說明、注意事項…"></textarea>
-            </div>
-
+            <div class="tags-hint" id="fixedChipHint" style="display:none;color:var(--purple)">固定通知模式：通知時機以固定日期為基準計算</div>
           </div>
-          <button type="submit" class="btn-submit" id="submitBtn">
-            <span>📤</span> 送出通報
-          </button>
-        </form>
-      </div>
-    </div>
 
-  </div>
-  </div>
-
-  <!-- ── PAGE: DASHBOARD ── -->
-  <div class="page" id="page-dashboard">
-  <div class="container">
-
-    <div class="section-title">行程總覽</div>
-
-    <div class="stats-row" id="statsRow">
-      <div class="stat-card gold"  data-icon="📅"><div class="stat-num" id="s_total">–</div><div class="stat-label">全部行程</div></div>
-      <div class="stat-card red"   data-icon="🔴"><div class="stat-num" id="s_today">–</div><div class="stat-label">今天</div></div>
-      <div class="stat-card green" data-icon="📆"><div class="stat-num" id="s_week">–</div><div class="stat-label">本週</div></div>
-      <div class="stat-card blue"  data-icon="✅"><div class="stat-num" id="s_done">–</div><div class="stat-label">已完成</div></div>
-    </div>
-
-    <div class="search-bar">
-      <span>🔍</span>
-      <input type="text" id="searchInput" placeholder="搜尋行程主題、類型…" oninput="filterTable()">
-      <button class="btn-refresh-sm" onclick="loadDashboard()">
-        <span id="refreshIcon">↻</span>
-      </button>
-    </div>
-
-    <div class="filter-row">
-      <button class="filter-btn active" onclick="setFilter('all',this)">全部</button>
-      <button class="filter-btn" onclick="setFilter('today',this)">今天</button>
-      <button class="filter-btn" onclick="setFilter('week',this)">本週</button>
-      <button class="filter-btn" onclick="setFilter('coming',this)">即將</button>
-      <button class="filter-btn" onclick="setFilter('past',this)">已過期</button>
-    </div>
-
-    <div class="event-list" id="eventList">
-      <div class="empty-state"><div class="icon">⏳</div><p>載入中…</p></div>
-    </div>
-
-  </div>
-  </div>
-
-  <!-- ── PAGE: SETTINGS ── -->
-  <div class="page" id="page-settings">
-  <div class="container">
-
-    <div class="section-title">系統設定</div>
-    <div class="settings-group">
-
-      <!-- Script URL -->
-      <div class="settings-card">
-        <div class="settings-card-header">🔗 Google Apps Script 連接</div>
-        <div class="settings-card-body">
-          <div style="font-size:12px;color:var(--ink3);margin-bottom:8px">Web App 網址（Script URL）</div>
-          <input type="url" class="settings-input full" id="cfg_scriptUrl" placeholder="https://script.google.com/macros/s/...">
-          <div style="font-size:11px;color:var(--ink3);line-height:1.6;margin-top:6px;margin-bottom:10px">
-            Apps Script → 部署 → 管理部署 → Web 應用程式 URL。需設定「以我的身份執行」並允許「任何人存取」。
+          <div class="form-group full">
+            <label>💬 備註</label>
+            <textarea id="f_note" placeholder="其他補充說明、注意事項…"></textarea>
           </div>
-          <div class="settings-row">
-            <label>試算表 ID</label>
-            <input type="text" class="settings-input" id="cfg_sheetId" placeholder="1BxiMV...">
-          </div>
-          <div class="settings-row">
-            <label>分頁名稱</label>
-            <input type="text" class="settings-input" id="cfg_sheetName" value="行程通知">
-          </div>
-          <button class="btn-save" onclick="saveConfig()">💾 儲存設定</button>
-          <button class="btn-save dark" onclick="testConnection()">🔌 測試連線</button>
+
         </div>
-      </div>
-
-      <!-- LINE -->
-      <div class="settings-card">
-        <div class="settings-card-header">💬 LINE 通知設定</div>
-        <div class="settings-card-body">
-          <div style="font-size:12px;color:var(--ink3);margin-bottom:8px">預設通知時機</div>
-          <div class="notify-group" style="margin-bottom:12px">
-            <label class="notify-chip" id="s_chip7" onclick="toggleChip('s_chip7','s_n7')">
-              <input type="checkbox" id="s_n7"><span class="dot"></span>7天前
-            </label>
-            <label class="notify-chip checked" id="s_chip1" onclick="toggleChip('s_chip1','s_n1')">
-              <input type="checkbox" id="s_n1" checked><span class="dot"></span>1天前
-            </label>
-            <label class="notify-chip checked" id="s_chipD" onclick="toggleChip('s_chipD','s_nD')">
-              <input type="checkbox" id="s_nD" checked><span class="dot"></span>當天
-            </label>
-          </div>
-          <div class="settings-row">
-            <label>發送時間</label>
-            <input type="time" class="settings-input" id="cfg_sendTime" value="08:00">
-          </div>
-          <div class="settings-row">
-            <label>負責人 userId</label>
-            <input type="text" class="settings-input" id="cfg_adminId" placeholder="U...">
-          </div>
-          <button class="btn-save" onclick="saveConfig()">💾 儲存設定</button>
-        </div>
-      </div>
-
-      <!-- 人員 -->
-      <div class="settings-card">
-        <div class="settings-card-header">👤 個人 userId 對照表</div>
-        <div class="settings-card-body">
-          <table class="people-table">
-            <thead><tr><th>姓名</th><th>LINE userId</th><th>職稱</th><th></th></tr></thead>
-            <tbody id="peopleTbody"></tbody>
-          </table>
-          <button class="btn-add-row" onclick="addPersonRow()">＋ 新增人員</button>
-          <button class="btn-save" onclick="savePeopleGroups()">💾 儲存</button>
-        </div>
-      </div>
-
-      <!-- 群組 -->
-      <div class="settings-card">
-        <div class="settings-card-header">👥 群組 groupId 對照表</div>
-        <div class="settings-card-body">
-          <table class="people-table">
-            <thead><tr><th>群組名稱</th><th>LINE groupId</th><th></th></tr></thead>
-            <tbody id="groupTbody"></tbody>
-          </table>
-          <button class="btn-add-row" onclick="addGroupRow()">＋ 新增群組</button>
-          <button class="btn-save" onclick="savePeopleGroups()">💾 儲存</button>
-        </div>
-      </div>
-
-      <!-- 安裝指引 -->
-      <div class="settings-card">
-        <div class="settings-card-header">📲 安裝至手機主畫面</div>
-        <div class="settings-card-body">
-          <div style="font-size:13px;color:var(--ink2);line-height:1.8">
-            <strong>Android（Chrome）：</strong><br>
-            點右上角 ⋮ → 「新增至主畫面」或等待安裝提示出現後點「安裝」<br><br>
-            <strong>iPhone / iPad（Safari）：</strong><br>
-            點下方 □↑ 分享鈕 → 「加入主畫面」→ 點「新增」
-          </div>
-          <div id="installGuideBox" class="ios-guide">
-            <strong>📌 iOS 安裝步驟：</strong><br>
-            1. 確認使用 <strong>Safari</strong> 瀏覽器開啟此網頁<br>
-            2. 點擊下方工具列的 <strong>□↑（分享）</strong> 圖示<br>
-            3. 向下滑動選單，找到 <strong>「加入主畫面」</strong><br>
-            4. 確認名稱後點 <strong>「新增」</strong><br>
-            5. 主畫面將出現「華森通報」圖示
-          </div>
-          <button class="btn-save" onclick="document.getElementById('installGuideBox').classList.toggle('show')">查看 iOS 安裝步驟</button>
-          <button class="btn-save dark" id="installBtnSettings" onclick="doInstall()" style="display:none">立即安裝（Android）</button>
-        </div>
-      </div>
-
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <span>📤</span> 送出通報
+        </button>
+      </form>
     </div>
-  </div>
   </div>
 
 </div><!-- /app-main -->
-</div><!-- /app-main -->
-
-<!-- BOTTOM NAV -->
-<div class="bottom-nav">
-  <div class="bnav-items">
-    <button class="bnav-item active" id="nav-form" onclick="showPage('form')">
-      <span class="bnav-icon">📝</span>
-      <span class="bnav-label">填寫行程</span>
-    </button>
-    <button class="bnav-item" id="nav-dashboard" onclick="showPage('dashboard')">
-      <span class="bnav-icon">📊</span>
-      <span class="bnav-label">行程總覽</span>
-      <span class="bnav-dot" id="dot-dashboard"></span>
-    </button>
-    <button class="bnav-item" id="nav-settings" onclick="showPage('settings')">
-      <span class="bnav-icon">⚙️</span>
-      <span class="bnav-label">系統設定</span>
-    </button>
-  </div>
-</div>
-
-<!-- ══ LOCK OVERLAY ══ -->
-<div class="lock-overlay" id="lockOverlay">
-  <div class="lock-logo">
-    <img src="data:image/jpeg;base64,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" alt="華森建業">
-  </div>
-  <div class="lock-title">華森行程通報</div>
-  <div class="lock-sub">HUASEN SCHEDULE SYSTEM</div>
-  <div class="lock-card">
-    <div class="lock-label">🔐 請輸入管理密碼</div>
-    <div class="lock-input-wrap">
-      <input class="lock-input" type="password" id="lockInput"
-        maxlength="20" placeholder="••••••"
-        onkeydown="if(event.key==='Enter')verifyPassword()">
-      <button class="lock-eye" id="lockEye" onclick="toggleLockEye()">👁</button>
-    </div>
-    <div class="lock-error" id="lockError"></div>
-    <button class="lock-btn" onclick="verifyPassword()">
-      <span>🔓</span> 解鎖進入
-    </button>
-  </div>
-  <div class="lock-hint">
-    此頁面受密碼保護<br>
-    僅授權人員可查看行程總覽與系統設定
-  </div>
-</div>
-
-
 
 <script>
 // ══════════════════════════════════════
 //  STATE
 // ══════════════════════════════════════
-let config = {
-  scriptUrl: '',
-  sheetId: '',
-  sheetName: '行程通知',
-  adminId: 'U1b19067c31898048c56de0943859d2b6',
-  sendTime: '08:00',
-};
-let people = [
-  { name:'李龍溪', userId:'',                                    dept:'主管',  title:'副總經理', note:'管理者' },
-  { name:'林香君', userId:'',                                    dept:'財務部', title:'會計',     note:'' },
-  { name:'林募發', userId:'',                                    dept:'工務部', title:'工務',     note:'' },
-  { name:'鄭惠方', userId:'U1b19067c31898048c56de0943859d2b6',  dept:'業務部', title:'業務行政', note:'' },
-];
-let groups = [
-  { name:'華森建業家族', groupId:'' },
-  { name:'華森小秘書',   groupId:'Cb42d40ff51fc975760831567d251feec' },
-];
-let selectedPeople = [];
-let selectedGroups = [];
-let allRows = [];
-let currentFilter = 'all';
-let pendingSubmitData = null;
-let deferredInstallPrompt = null;
+let scriptUrl  = localStorage.getItem('hs_script_url') || '';
+let people     = [];
+let groups     = [];
+let typeList   = [];
+let selPeople  = [];
+let selGroups  = [];
+let pendingData= null;
 
 // ══════════════════════════════════════
-//  PWA / SERVICE WORKER
+//  PWA / SW
 // ══════════════════════════════════════
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js', {scope:'./'})
-    .then(reg => {
-      reg.addEventListener('updatefound', () => {
-        const nw = reg.installing;
-        nw?.addEventListener('statechange', () => {
-          if (nw.state==='installed' && navigator.serviceWorker.controller)
-            nw.postMessage({type:'SKIP_WAITING'});
-        });
-      });
-    }).catch(e => console.warn('SW:', e));
-});
-
-// 啟用：清除舊版快取
-self.addEventListener('activate', e => {
-  e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-    ).then(() => clients.claim())
-  );
-});
-
-// 攔截請求：Cache-First（有快取用快取，無則網路，網路失敗用快取）
-self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET') return;
-  // 不快取 Apps Script API 請求
-  if (e.request.url.includes('script.google.com')) return;
-  e.respondWith(
-    caches.match(e.request).then(cached => {
-      if (cached) {
-        // 背景更新快取
-        fetch(e.request).then(res => {
-          if (res && res.status === 200)
-            caches.open(CACHE_NAME).then(c => c.put(e.request, res));
-        }).catch(() => {});
-        return cached;
-      }
-      return fetch(e.request).then(res => {
-        if (!res || res.status !== 200 || res.type === 'opaque') return res;
-        const clone = res.clone();
-        caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
-        return res;
-      }).catch(() => caches.match(OFFLINE_URL));
-    })
-  );
-});
-`;
-  const swBlob = new Blob([swCode], {type:'text/javascript'});
-  const swUrl  = URL.createObjectURL(swBlob);
-  navigator.serviceWorker.register(swUrl, { scope: './' })
-    .then(reg => {
-      // 有新版本時自動更新
-      reg.addEventListener('updatefound', () => {
-        const nw = reg.installing;
-        nw?.addEventListener('statechange', () => {
-          if (nw.state === 'installed' && navigator.serviceWorker.controller) {
-            nw.postMessage({ type: 'SKIP_WAITING' });
-          }
-        });
-      });
-    })
-    .catch(() => {});
+    .catch(e => console.warn('SW:', e));
 }
 
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredInstallPrompt = e;
-  document.getElementById('installBanner').classList.remove('hidden');
-  const btn = document.getElementById('installBtnSettings');
-  if (btn) btn.style.display = 'inline-block';
-});
-window.addEventListener('appinstalled', () => {
-  document.getElementById('installBanner').classList.add('hidden');
-  toast('已成功安裝到主畫面！', 'success');
-});
+// ══════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('f_date').valueAsDate = new Date();
 
-function doInstall() {
-  if (!deferredInstallPrompt) { showInstallGuide(); return; }
-  deferredInstallPrompt.prompt();
-  deferredInstallPrompt.userChoice.then(() => {
-    deferredInstallPrompt = null;
-    document.getElementById('installBanner').classList.add('hidden');
-  });
-}
-function dismissInstall() {
-  document.getElementById('installBanner').classList.add('hidden');
-}
-function showInstallGuide() {
-  // Install guide is public — bypass password lock
-  if (isUnlocked) {
-    _doShowPage('settings');
+  if (scriptUrl) {
+    document.getElementById('scriptPrompt').style.display = 'none';
+    loadMembers();
   } else {
-    // Show a simple install-only modal instead of full settings
-    const box = document.getElementById('installGuideBox');
-    box.classList.add('show');
-    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    // If already on form page, just scroll to banner
-    toast('請查看上方安裝說明', 'info');
+    document.getElementById('scriptUrlInput').value = '';
+    document.getElementById('formCard').style.opacity = '.4';
+    document.getElementById('formCard').style.pointerEvents = 'none';
   }
+
+  document.addEventListener('touchmove', e => {
+    if (e.target.closest('.app-main')) return;
+    e.preventDefault();
+  }, {passive:false});
+});
+
+// ══════════════════════════════════════
+//  SCRIPT URL SETUP
+// ══════════════════════════════════════
+function saveScriptUrl() {
+  const val = document.getElementById('scriptUrlInput').value.trim();
+  if (!val || !val.includes('script.google.com')) {
+    toast('請輸入正確的 Apps Script Web App URL', 'error'); return;
+  }
+  scriptUrl = val;
+  localStorage.setItem('hs_script_url', val);
+  document.getElementById('scriptPrompt').style.display = 'none';
+  document.getElementById('formCard').style.opacity = '1';
+  document.getElementById('formCard').style.pointerEvents = 'auto';
+  loadMembers();
+}
+function skipPrompt() {
+  document.getElementById('scriptPrompt').style.display = 'none';
+  document.getElementById('formCard').style.opacity = '1';
+  document.getElementById('formCard').style.pointerEvents = 'auto';
+  toast('已略過連線設定，人員名單將使用預設值', 'info');
+  renderPeopleDropdown(); renderGroupDropdown();
 }
 
 // ══════════════════════════════════════
-//  STORAGE
+//  LOAD MEMBERS FROM SHEETS
 // ══════════════════════════════════════
-function loadLocal() {
+async function loadMembers() {
+  if (!scriptUrl) { renderPeopleDropdown(); renderGroupDropdown(); return; }
+
+  const bar  = document.getElementById('loadingBar');
+  const spin = document.getElementById('loadSpinner');
+  const txt  = document.getElementById('loadText');
+  const badge= document.getElementById('syncBadge');
+
+  bar.style.display = 'flex';
+  badge.style.color = 'rgba(255,255,255,.3)';
+
   try {
-    const c = localStorage.getItem('hs_config');
-    if (c) config = { ...config, ...JSON.parse(c) };
-    const p = localStorage.getItem('hs_people');
-    if (p) {
-      const saved = JSON.parse(p);
-      people = people.map(def => {
-        const s = saved.find(x => x.name === def.name);
-        return s ? { ...def, userId: s.userId||def.userId, dept: s.dept||def.dept, title: s.title||def.title } : def;
-      });
-      saved.forEach(s => { if (!people.find(x => x.name===s.name)) people.push(s); });
-    }
-    const g = localStorage.getItem('hs_groups');
-    if (g) {
-      const saved = JSON.parse(g);
-      groups = groups.map(def => {
-        const s = saved.find(x => x.name===def.name);
-        return s ? { ...def, groupId: s.groupId||def.groupId } : def;
-      });
-      saved.forEach(s => { if (!groups.find(x => x.name===s.name)) groups.push(s); });
-    }
-    people.forEach(p => { p.userId  = (p.userId  ||'').replace(/[\r\n\s]/g,''); });
-    groups.forEach(g => { g.groupId = (g.groupId ||'').replace(/[\r\n\s]/g,''); });
-  } catch(e) {}
-}
-function saveLocal() {
-  localStorage.setItem('hs_config',  JSON.stringify(config));
-  localStorage.setItem('hs_people',  JSON.stringify(people));
-  localStorage.setItem('hs_groups',  JSON.stringify(groups));
-}
-
-// ══════════════════════════════════════
-//  NAVIGATION
-// ══════════════════════════════════════
-// 密碼 Hash 從 Google Sheets「系統設定」分頁動態取得
-// 若無法連線則使用此備用 Hash（對應密碼：son42937917）
-const DEFAULT_HASH = '08400b5a5017a9306760ab056d96f4b7b6963411dbf6b1e5bc41dcc1db4e4677';
-let   PASS_HASH    = DEFAULT_HASH;  // 初始為備用，連線後更新為 Sheets 上的值
-const PROTECTED    = ['dashboard', 'settings'];
-let   isUnlocked   = false;
-
-// 從 Sheets 取得最新密碼 Hash（App 啟動後在背景執行）
-async function fetchPasswordHash() {
-  if (!config.scriptUrl) return;
-  try {
-    const res  = await fetch(config.scriptUrl + '?action=getPasswordHash');
+    const res  = await fetch(scriptUrl + '?action=getMembers');
     const json = await res.json();
-    if (json.ok && json.hash) {
-      PASS_HASH = json.hash;
+
+    if (json.ok) {
+      people   = json.people  || [];
+      groups   = json.groups  || [];
+      typeList = json.types   || [];
+
+      // 同步類型下拉選單
+      if (typeList.length > 0) {
+        const sel = document.getElementById('f_type');
+        const cur = sel.value;
+        while (sel.options.length > 1) sel.remove(1);
+        typeList.forEach(t => {
+          const opt = document.createElement('option');
+          opt.value = opt.text = t;
+          sel.appendChild(opt);
+        });
+        if (cur) sel.value = cur;
+      }
+
+      bar.classList.add('done');
+      spin.style.display = 'none';
+      txt.textContent = `✓ 已同步：${people.length} 位人員、${groups.length} 個群組`;
+      badge.textContent = '✓';
+      badge.style.color = 'var(--gold2)';
+      setTimeout(() => { bar.style.display='none'; }, 2500);
     }
   } catch(e) {
-    // 無法連線時沿用備用 hash，不影響使用
-  }
-}
-
-async function sha256(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
-function showPage(name) {
-  if (PROTECTED.includes(name) && !isUnlocked) {
-    showLock(name);
-    return;
-  }
-  _doShowPage(name);
-}
-
-function _doShowPage(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
-  document.getElementById('nav-' + name).classList.add('active');
-  document.getElementById('appMain').scrollTop = 0;
-  if (name === 'dashboard') loadDashboard();
-  if (name === 'settings')  renderSettings();
-}
-
-// ── Lock / Unlock ──
-let pendingPage = null;
-function showLock(targetPage) {
-  pendingPage = targetPage;
-  const overlay = document.getElementById('lockOverlay');
-  overlay.classList.remove('hidden');
-  document.getElementById('lockInput').value = '';
-  document.getElementById('lockError').textContent = '';
-  setTimeout(() => document.getElementById('lockInput').focus(), 300);
-}
-
-async function verifyPassword() {
-  const input = document.getElementById('lockInput').value;
-  const errEl = document.getElementById('lockError');
-  if (!input) { showLockError('請輸入密碼'); return; }
-  const hash = await sha256(input);
-  if (hash === PASS_HASH) {
-    isUnlocked = true;
-    // Save session (expires on tab close)
-    sessionStorage.setItem('hs_unlocked', '1');
-    const overlay = document.getElementById('lockOverlay');
-    overlay.classList.add('hidden');
-    // Update nav badges
-    document.querySelectorAll('.bnav-item.locked').forEach(b => b.classList.remove('locked'));
-    if (pendingPage) {
-      _doShowPage(pendingPage);
-      pendingPage = null;
+    bar.classList.add('err');
+    spin.style.display = 'none';
+    txt.textContent = '⚠ 無法連線 Sheets，使用本機記錄';
+    badge.textContent = '!';
+    badge.style.color = '#ff8080';
+    // 嘗試讀 localStorage 快取
+    const cached = localStorage.getItem('hs_members');
+    if (cached) {
+      const c = JSON.parse(cached);
+      people = c.people || []; groups = c.groups || [];
+      txt.textContent += `（快取：${people.length}人）`;
     }
-    toast('已解鎖，歡迎使用管理功能', 'success');
-  } else {
-    showLockError('密碼錯誤，請再試一次');
-    document.getElementById('lockInput').select();
+    setTimeout(() => { bar.style.display='none'; }, 3000);
+  }
+
+  // 快取到 localStorage
+  if (people.length > 0 || groups.length > 0) {
+    localStorage.setItem('hs_members', JSON.stringify({people, groups}));
+  }
+
+  renderPeopleDropdown();
+  renderGroupDropdown();
+}
+
+// ══════════════════════════════════════
+//  MULTI-SELECT
+// ══════════════════════════════════════
+function renderPeopleDropdown() {
+  const dd = document.getElementById('peopleDropdown');
+  dd.innerHTML = people.length
+    ? people.map((p,i) => `
+      <div class="mso ${selPeople.includes(i)?'selected':''}" onclick="toggleItem('people',${i})">
+        <span class="check">${selPeople.includes(i)?'✓':''}</span>
+        <span>${p.name}</span>
+        <span class="ms-role">${p.title||''}</span>
+      </div>`).join('')
+    : '<div style="padding:14px;text-align:center;color:#999;font-size:13px">尚未載入名單</div>';
+}
+function renderGroupDropdown() {
+  const dd = document.getElementById('groupDropdown');
+  dd.innerHTML = groups.length
+    ? groups.map((g,i) => `
+      <div class="mso ${selGroups.includes(i)?'selected':''}" onclick="toggleItem('group',${i})">
+        <span class="check">${selGroups.includes(i)?'✓':''}</span>
+        <span>${g.name}</span>
+      </div>`).join('')
+    : '<div style="padding:14px;text-align:center;color:#999;font-size:13px">尚未載入名單</div>';
+}
+function toggleMS(type) {
+  const dd = document.getElementById(type+'Dropdown');
+  const d  = document.getElementById(type+'Display');
+  const open = dd.classList.toggle('open');
+  d.classList.toggle('open', open);
+  if (open) setTimeout(() => document.addEventListener('click', e => closeMS(e, type), {once:true}), 0);
+}
+function closeMS(e, type) {
+  const dd = document.getElementById(type+'Dropdown');
+  const d  = document.getElementById(type+'Display');
+  if (!dd?.contains(e.target) && !d?.contains(e.target)) {
+    dd?.classList.remove('open'); d?.classList.remove('open');
   }
 }
-
-function showLockError(msg) {
-  const el = document.getElementById('lockError');
-  el.textContent = msg;
-  el.classList.remove('shake');
-  void el.offsetWidth; // reflow to restart animation
-  el.classList.add('shake');
-}
-
-function toggleLockEye() {
-  const inp = document.getElementById('lockInput');
-  const eye = document.getElementById('lockEye');
-  if (inp.type === 'password') {
-    inp.type = 'text'; eye.textContent = '🙈';
+function toggleItem(type, i) {
+  const sel  = type==='people' ? selPeople : selGroups;
+  const data = type==='people' ? people    : groups;
+  const tags = document.getElementById(type+'Tags');
+  const idx  = sel.indexOf(i);
+  if (idx>-1) sel.splice(idx,1); else sel.push(i);
+  if (type==='people') renderPeopleDropdown(); else renderGroupDropdown();
+  if (sel.length) {
+    tags.innerHTML = sel.map(i=>`<span class="ms-tag">${data[i].name}</span>`).join('');
   } else {
-    inp.type = 'password'; eye.textContent = '👁';
+    tags.innerHTML = `<span style="color:var(--ink3);font-size:14px">${type==='people'?'請選擇參與人員':'請選擇群組'}</span>`;
   }
 }
 
 // ══════════════════════════════════════
-//  TOAST
+//  FIXED NOTIFY TOGGLE
 // ══════════════════════════════════════
-function toast(msg, type='info') {
-  const w = document.getElementById('toastWrap');
-  const t = document.createElement('div');
-  t.className = `toast ${type}`;
-  const icons = { success:'✅', error:'❌', info:'ℹ️' };
-  t.innerHTML = `<span>${icons[type]||'📢'}</span><span>${msg}</span>`;
-  w.appendChild(t);
-  setTimeout(() => { t.style.animation='toastOut .28s ease forwards'; setTimeout(()=>t.remove(),280); }, 3200);
-}
-
-function updateConfigNotice() {
-  const n = document.getElementById('configNotice');
-  if (n) n.style.display = config.scriptUrl ? 'none' : 'flex';
+function toggleFixedSection() {
+  const cb    = document.getElementById('f_fixed');
+  const sec   = document.getElementById('fixedSection');
+  const txt   = document.getElementById('fixedToggleText');
+  const hint  = document.getElementById('fixedChipHint');
+  const dateF = document.getElementById('f_date');
+  sec.classList.toggle('hidden', !cb.checked);
+  txt.textContent = cb.checked ? '開啟（每年重複）' : '關閉';
+  hint.style.display = cb.checked ? 'block' : 'none';
+  if (cb.checked) dateF.disabled = true;
+  else dateF.disabled = false;
 }
 
 // ══════════════════════════════════════
@@ -1310,129 +659,64 @@ function toggleChip(chipId, cbId) {
 }
 
 // ══════════════════════════════════════
-//  PEOPLE MULTI-SELECT
+//  TOAST
 // ══════════════════════════════════════
-function renderPeopleDropdown() {
-  const dd = document.getElementById('peopleDropdown');
-  if (!dd) return;
-  dd.innerHTML = people.map((p,i) => `
-    <div class="multi-select-option ${selectedPeople.includes(i)?'selected':''}" onclick="togglePerson(${i})">
-      <span class="check">${selectedPeople.includes(i)?'✓':''}</span>
-      <span>${p.name}</span>
-      <span class="ms-role">${p.title||p.dept||''}</span>
-    </div>`).join('');
-}
-function togglePeopleDropdown() {
-  const d  = document.getElementById('peopleDisplay');
-  const dd = document.getElementById('peopleDropdown');
-  const open = dd.classList.toggle('open');
-  d.classList.toggle('open', open);
-  if (open) setTimeout(() => document.addEventListener('click', closePeopleOnOutside), 0);
-}
-function closePeopleOnOutside(e) {
-  const dd = document.getElementById('peopleDropdown');
-  const d  = document.getElementById('peopleDisplay');
-  if (!dd?.contains(e.target) && !d?.contains(e.target)) {
-    dd?.classList.remove('open'); d?.classList.remove('open');
-    document.removeEventListener('click', closePeopleOnOutside);
-  }
-}
-function togglePerson(i) {
-  const idx = selectedPeople.indexOf(i);
-  if (idx > -1) selectedPeople.splice(idx, 1); else selectedPeople.push(i);
-  renderPeopleDropdown();
-  const tags = document.getElementById('peopleTags');
-  if (selectedPeople.length) {
-    tags.innerHTML = selectedPeople.map(i=>`<span class="ms-tag">${people[i].name}</span>`).join('');
-  } else {
-    tags.innerHTML = `<span style="color:var(--ink3);font-size:14px">請選擇參與人員</span>`;
-  }
+function toast(msg, type='info') {
+  const w = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  const icons = {success:'✅',error:'❌',info:'ℹ️'};
+  t.innerHTML = `<span>${icons[type]||'📢'}</span><span>${msg}</span>`;
+  w.appendChild(t);
+  setTimeout(()=>{t.style.animation='toastOut .28s ease forwards';setTimeout(()=>t.remove(),280);},3200);
 }
 
 // ══════════════════════════════════════
-//  GROUP MULTI-SELECT
-// ══════════════════════════════════════
-function renderGroupDropdown() {
-  const dd = document.getElementById('groupDropdown');
-  if (!dd) return;
-  dd.innerHTML = groups.map((g,i) => `
-    <div class="multi-select-option ${selectedGroups.includes(i)?'selected':''}" onclick="toggleGroup(${i})">
-      <span class="check">${selectedGroups.includes(i)?'✓':''}</span>
-      ${g.name}
-    </div>`).join('');
-}
-function toggleGroupDropdown() {
-  const d  = document.getElementById('groupDisplay');
-  const dd = document.getElementById('groupDropdown');
-  const open = dd.classList.toggle('open');
-  d.classList.toggle('open', open);
-  if (open) setTimeout(() => document.addEventListener('click', closeGroupOnOutside), 0);
-}
-function closeGroupOnOutside(e) {
-  if (!document.getElementById('groupDropdown')?.contains(e.target) &&
-      !document.getElementById('groupDisplay')?.contains(e.target)) {
-    document.getElementById('groupDropdown')?.classList.remove('open');
-    document.getElementById('groupDisplay')?.classList.remove('open');
-    document.removeEventListener('click', closeGroupOnOutside);
-  }
-}
-function toggleGroup(i) {
-  const idx = selectedGroups.indexOf(i);
-  if (idx > -1) selectedGroups.splice(idx, 1); else selectedGroups.push(i);
-  renderGroupDropdown();
-  const tags = document.getElementById('groupTags');
-  if (selectedGroups.length) {
-    tags.innerHTML = selectedGroups.map(i=>`<span class="ms-tag">${groups[i].name}</span>`).join('');
-  } else {
-    tags.innerHTML = `<span style="color:var(--ink3);font-size:14px">請選擇群組</span>`;
-  }
-}
-
-// ══════════════════════════════════════
-//  FORM
+//  FORM SUBMIT
 // ══════════════════════════════════════
 function handleSubmit(e) {
   e.preventDefault();
-  const date  = document.getElementById('f_date').value;
-  const type  = document.getElementById('f_type').value;
-  const title = document.getElementById('f_title').value.trim();
-  if (!date||!type||!title) { toast('請填寫必填欄位','error'); return; }
-  pendingSubmitData = {
-    date, type, title,
+  if (!scriptUrl) { toast('請先設定 Script URL','error'); return; }
+  const isFixed = document.getElementById('f_fixed').checked;
+  const date    = document.getElementById('f_date').value;
+  const type    = document.getElementById('f_type').value;
+  const title   = document.getElementById('f_title').value.trim();
+  if ((!date && !isFixed) || !type || !title) { toast('請填寫必填欄位','error'); return; }
+  if (isFixed && !document.getElementById('f_fixed_date').value.trim()) {
+    toast('請填寫固定日期（月/日）','error'); return;
+  }
+  pendingData = {
+    date:      isFixed ? '' : date,
+    type, title,
     timeStart: document.getElementById('f_time_start').value,
     timeEnd:   document.getElementById('f_time_end').value,
     location:  document.getElementById('f_location').value,
-    members:   selectedPeople.map(i=>people[i].name).join(','),
-    groups:    selectedGroups.map(i=>groups[i].name).join(','),
+    members:   selPeople.map(i=>people[i]?.name||'').filter(Boolean).join(','),
+    groups:    selGroups.map(i=>groups[i]?.name||'').filter(Boolean).join(','),
     note:      document.getElementById('f_note').value,
-    notify7:   document.getElementById('n_7day').checked,
-    notify1:   document.getElementById('n_1day').checked,
-    notifyD:   document.getElementById('n_day').checked,
+    fixed:     isFixed ? '是' : '否',
+    fixedDate: document.getElementById('f_fixed_date').value.trim(),
+    notify7:   document.getElementById('n_7day').checked ? '是' : '否',
+    notify1:   document.getElementById('n_1day').checked ? '是' : '否',
+    notifyD:   document.getElementById('n_day').checked  ? '是' : '否',
   };
   document.getElementById('confirmModal').classList.add('open');
 }
-function closeModal() {
-  document.getElementById('confirmModal').classList.remove('open');
-}
+
+function closeModal() { document.getElementById('confirmModal').classList.remove('open'); }
+
 async function confirmSubmit() {
   closeModal();
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>送出中…';
-  const d = pendingSubmitData;
-  const memberIds = selectedPeople.map(i=>people[i].userId).filter(Boolean).join(',');
-  const groupIds  = selectedGroups.map(i=>groups[i].groupId).filter(Boolean).join(',');
-  const payload   = { ...d, memberIds, groupIds };
+  btn.innerHTML = '<span class="spinner" style="border-top-color:var(--ink)"></span>送出中…';
   try {
-    if (!config.scriptUrl) throw new Error('no-url');
-    await fetch(config.scriptUrl + '?action=add&' + new URLSearchParams(payload), { method:'GET', mode:'no-cors' });
-    toast('行程通報已送出！LINE 通知已發送給負責人。','success');
+    await fetch(scriptUrl + '?action=add&' + new URLSearchParams(pendingData), {method:'GET',mode:'no-cors'});
+    toast('行程通報已送出！負責人將立即收到 LINE 通知。','success');
     resetForm();
-    // 更新 dashboard dot
-    document.getElementById('dot-dashboard').classList.add('show');
   } catch(err) {
-    if (err.message === 'no-url') toast('請先至系統設定填入 Script URL','error');
-    else { toast('行程已送出（如未收到通知，請確認 Script 設定）','info'); resetForm(); }
+    toast('行程已送出（如未收到通知請確認 Script 設定）','info');
+    resetForm();
   }
   btn.disabled = false;
   btn.innerHTML = '<span>📤</span> 送出通報';
@@ -1441,207 +725,21 @@ async function confirmSubmit() {
 function resetForm() {
   document.getElementById('scheduleForm').reset();
   document.getElementById('f_date').valueAsDate = new Date();
-  selectedPeople = []; selectedGroups = [];
+  selPeople=[]; selGroups=[];
   renderPeopleDropdown(); renderGroupDropdown();
-  document.getElementById('peopleTags').innerHTML = `<span style="color:var(--ink3);font-size:14px">請選擇參與人員</span>`;
-  document.getElementById('groupTags').innerHTML  = `<span style="color:var(--ink3);font-size:14px">請選擇群組</span>`;
-  ['chip7','chip1','chipD'].forEach(id => document.getElementById(id).classList.remove('checked'));
+  document.getElementById('peopleTags').innerHTML = '<span style="color:var(--ink3);font-size:14px">請選擇參與人員</span>';
+  document.getElementById('groupTags').innerHTML  = '<span style="color:var(--ink3);font-size:14px">請選擇群組</span>';
+  ['chip7','chip1','chipD'].forEach(id=>document.getElementById(id).classList.remove('checked'));
   document.getElementById('chip1').classList.add('checked');
   document.getElementById('chipD').classList.add('checked');
   document.getElementById('n_1day').checked = true;
   document.getElementById('n_day').checked  = true;
+  document.getElementById('f_fixed').checked = false;
+  document.getElementById('fixedSection').classList.add('hidden');
+  document.getElementById('fixedToggleText').textContent = '關閉';
+  document.getElementById('fixedChipHint').style.display = 'none';
+  document.getElementById('f_date').disabled = false;
 }
-
-// ══════════════════════════════════════
-//  DASHBOARD
-// ══════════════════════════════════════
-async function loadDashboard() {
-  document.getElementById('dot-dashboard').classList.remove('show');
-  const ri = document.getElementById('refreshIcon');
-  ri.style.animation = 'spin .7s linear infinite';
-  document.getElementById('eventList').innerHTML = '<div class="empty-state"><div class="icon">⏳</div><p>載入中…</p></div>';
-  try {
-    if (!config.scriptUrl) throw new Error('no url');
-    const res  = await fetch(config.scriptUrl + '?action=list');
-    const json = await res.json();
-    allRows = json.data || [];
-  } catch(e) { allRows = []; }
-  renderStats(); renderList(); ri.style.animation = '';
-}
-
-function renderStats() {
-  const today = new Date().toISOString().split('T')[0];
-  const week  = new Date(); week.setDate(week.getDate()+7);
-  document.getElementById('s_total').textContent = allRows.length;
-  document.getElementById('s_today').textContent = allRows.filter(r=>r.date===today).length;
-  document.getElementById('s_week').textContent  = allRows.filter(r=>r.date>today && r.date<=week.toISOString().split('T')[0]).length;
-  document.getElementById('s_done').textContent  = allRows.filter(r=>r.sentD===true||r.sentD==='TRUE').length;
-}
-
-function getStatus(row) {
-  const today = new Date().toISOString().split('T')[0];
-  if (row.date < today) return 'past';
-  if (row.date === today) return 'today';
-  const diff = Math.round((new Date(row.date)-new Date())/86400000);
-  return diff <= 7 ? 'week' : 'coming';
-}
-
-function renderList() {
-  const q = (document.getElementById('searchInput').value||'').toLowerCase();
-  const rows = allRows.filter(r => {
-    if (currentFilter !== 'all' && getStatus(r) !== currentFilter) return false;
-    if (q && !(r.title||'').toLowerCase().includes(q) && !(r.type||'').toLowerCase().includes(q)) return false;
-    return true;
-  });
-  const el = document.getElementById('eventList');
-  if (!rows.length) {
-    el.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>沒有符合條件的行程</p></div>';
-    return;
-  }
-  const statusBadge = {
-    today: '<span class="badge badge-today">🔴 今天</span>',
-    week:  '<span class="badge badge-week">🟢 本週</span>',
-    coming:'<span class="badge badge-coming">📅 即將</span>',
-    past:  '<span class="badge badge-past">⚫ 已過期</span>',
-  };
-  el.innerHTML = rows.map(r => {
-    const st = getStatus(r);
-    const timeStr = r.timeStart && r.timeEnd ? `${r.timeStart}–${r.timeEnd}` : r.timeStart||r.timeEnd||'';
-    const dots = [
-      {label:'7', on:r.notify7===true||r.notify7==='TRUE', sent:r.sent7===true||r.sent7==='TRUE'},
-      {label:'1', on:r.notify1===true||r.notify1==='TRUE', sent:r.sent1===true||r.sent1==='TRUE'},
-      {label:'當',on:r.notifyD===true||r.notifyD==='TRUE', sent:r.sentD===true||r.sentD==='TRUE'},
-    ];
-    return `<div class="event-card ${st}">
-      <div class="event-card-body">
-        <div class="event-top">
-          <span class="event-date">${r.date}</span>
-          <span class="badge badge-type">${r.type||''}</span>
-          ${statusBadge[st]||''}
-        </div>
-        <div class="event-title">${r.title}</div>
-        <div class="event-meta">
-          ${timeStr?`<span>🕐 ${timeStr}</span>`:''}
-          ${r.location?`<span>📍 ${r.location}</span>`:''}
-          ${r.members?`<span>👥 ${r.members}</span>`:''}
-        </div>
-        ${r.note?`<div style="font-size:11px;color:var(--ink3);margin-top:5px">💬 ${r.note}</div>`:''}
-      </div>
-      <div class="event-footer">
-        <span style="font-size:11px;color:var(--ink3)">${r.groups||'無群組'}</span>
-        <div class="notify-dots">${dots.map(d=>`<span class="ndot ${d.sent?'sent':d.on?'on':'off'}">${d.label}</span>`).join('')}</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function filterTable() { renderList(); }
-function setFilter(f, btn) {
-  currentFilter = f;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderList();
-}
-
-// ══════════════════════════════════════
-//  SETTINGS
-// ══════════════════════════════════════
-function renderSettings() {
-  document.getElementById('cfg_scriptUrl').value = config.scriptUrl||'';
-  document.getElementById('cfg_sheetId').value   = config.sheetId||'';
-  document.getElementById('cfg_sheetName').value = config.sheetName||'行程通知';
-  document.getElementById('cfg_adminId').value   = config.adminId||'';
-  document.getElementById('cfg_sendTime').value  = config.sendTime||'08:00';
-  renderSettingsPeople();
-  renderSettingsGroups();
-}
-
-function renderSettingsPeople() {
-  document.getElementById('peopleTbody').innerHTML = people.map((p,i) => `
-    <tr>
-      <td><input value="${p.name}" style="width:60px;font-size:12px;padding:3px 5px;border:1px solid var(--paper3);border-radius:4px;background:var(--paper)" onchange="people[${i}].name=this.value"></td>
-      <td><input value="${p.userId||''}" class="id-cell" style="width:130px;font-size:10px;padding:3px 5px;border:1px solid var(--paper3);border-radius:4px;background:var(--paper);font-family:'DM Mono',monospace" onchange="people[${i}].userId=this.value"></td>
-      <td><input value="${p.title||''}" style="width:60px;font-size:12px;padding:3px 5px;border:1px solid var(--paper3);border-radius:4px;background:var(--paper)" onchange="people[${i}].title=this.value"></td>
-      <td><button class="btn-del" onclick="people.splice(${i},1);renderSettingsPeople()">🗑</button></td>
-    </tr>`).join('');
-}
-function renderSettingsGroups() {
-  document.getElementById('groupTbody').innerHTML = groups.map((g,i) => `
-    <tr>
-      <td><input value="${g.name}" style="width:90px;font-size:12px;padding:3px 5px;border:1px solid var(--paper3);border-radius:4px;background:var(--paper)" onchange="groups[${i}].name=this.value;renderGroupDropdown()"></td>
-      <td><input value="${g.groupId||''}" class="id-cell" style="width:160px;font-size:10px;padding:3px 5px;border:1px solid var(--paper3);border-radius:4px;background:var(--paper);font-family:'DM Mono',monospace" onchange="groups[${i}].groupId=this.value"></td>
-      <td><button class="btn-del" onclick="groups.splice(${i},1);renderSettingsGroups();renderGroupDropdown()">🗑</button></td>
-    </tr>`).join('');
-}
-
-function addPersonRow() {
-  people.push({name:'',userId:'',dept:'',title:'',note:''});
-  renderSettingsPeople();
-}
-function addGroupRow() {
-  groups.push({name:'',groupId:''});
-  renderSettingsGroups();
-  renderGroupDropdown();
-}
-function saveConfig() {
-  config.scriptUrl = document.getElementById('cfg_scriptUrl').value.trim();
-  config.sheetId   = document.getElementById('cfg_sheetId').value.trim();
-  config.sheetName = document.getElementById('cfg_sheetName').value.trim();
-  config.adminId   = document.getElementById('cfg_adminId').value.trim();
-  config.sendTime  = document.getElementById('cfg_sendTime').value;
-  saveLocal(); updateConfigNotice();
-  toast('設定已儲存','success');
-}
-function savePeopleGroups() {
-  saveLocal(); renderGroupDropdown(); renderPeopleDropdown();
-  toast('對照表已儲存','success');
-}
-async function testConnection() {
-  if (!config.scriptUrl) { toast('請先填入 Script URL','error'); return; }
-  toast('測試連線中…','info');
-  try {
-    const res = await fetch(config.scriptUrl + '?action=ping');
-    const txt = await res.text();
-    toast(txt.includes('pong') ? '✅ 連線成功！' : '⚠️ 連線異常，請確認部署設定', txt.includes('pong')?'success':'error');
-  } catch(e) {
-    toast('無法連線，請確認 Script URL','error');
-  }
-}
-
-// ══════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════
-document.addEventListener('DOMContentLoaded', () => {
-  loadLocal();
-  updateConfigNotice();
-  renderGroupDropdown();
-  renderPeopleDropdown();
-  renderSettingsPeople();
-  renderSettingsGroups();
-  document.getElementById('f_date').valueAsDate = new Date();
-
-  // 背景更新密碼 Hash（從 Sheets 取得最新值）
-  fetchPasswordHash();
-
-  // Restore session unlock (same tab session)
-  if (sessionStorage.getItem('hs_unlocked') === '1') {
-    isUnlocked = true;
-    document.getElementById('lockOverlay').classList.add('hidden');
-  } else {
-    // Mark protected nav items as locked
-    PROTECTED.forEach(name => {
-      document.getElementById('nav-' + name)?.classList.add('locked');
-    });
-    // Show lock screen immediately hidden (only shows when user taps protected tab)
-    document.getElementById('lockOverlay').classList.add('hidden');
-  }
-
-  // 防止 iOS 橡皮筋效果
-  document.addEventListener('touchmove', e => {
-    if (e.target.closest('.app-main')) return;
-    e.preventDefault();
-  }, { passive: false });
-});
 </script>
 </body>
 </html>
