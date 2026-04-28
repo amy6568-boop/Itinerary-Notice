@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="華森通報">
 <meta name="theme-color" content="#0f1117">
-<title>華森行程通報 v6</title>
+<title>華森行程通報 v7</title>
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <link rel="icon" type="image/png" href="./icon-192.png">
@@ -80,15 +80,8 @@ body::before{
 .loading-bar.err{background:var(--red);}
 
 /* FORM CARD */
-.form-card{background:#fff;border-radius:16px;box-shadow:var(--sh2);overflow:hidden;margin-bottom:16px;}
-.form-header{
-  background:linear-gradient(135deg,var(--ink) 0%,var(--ink2) 100%);
-  padding:18px;display:flex;align-items:center;gap:12px;
-}
-.form-header-img{width:52px;height:52px;border-radius:10px;overflow:hidden;flex-shrink:0;}
-.form-header-img img{width:100%;height:100%;object-fit:cover;display:block;}
-.form-header-text h2{font-family:'Noto Serif TC',serif;color:#fff;font-size:17px;font-weight:700;}
-.form-header-text p{color:rgba(255,255,255,.5);font-size:12px;margin-top:3px;}
+.form-card{background:#fff;border-radius:16px;box-shadow:var(--sh2);overflow:hidden;margin-bottom:16px;margin-top:4px;}
+/* form-header removed */
 .form-body{padding:16px;}
 
 /* FORM GRID */
@@ -138,11 +131,13 @@ textarea{resize:none;height:80px;}
 /* NOTIFY CHIPS */
 .notify-group{display:flex;gap:8px;flex-wrap:wrap;}
 .notify-chip{
-  display:flex;align-items:center;gap:6px;padding:9px 14px;
+  display:flex;align-items:center;gap:6px;padding:10px 14px;
   border-radius:24px;border:1.5px solid var(--paper3);cursor:pointer;
   font-size:13px;font-weight:600;color:var(--ink3);
+  font-family:'Sora',system-ui,-apple-system,sans-serif;
   background:var(--paper);transition:all .18s;user-select:none;
-  flex:1;justify-content:center;min-width:80px;
+  flex:1;justify-content:center;min-width:80px;min-height:44px;
+  -webkit-tap-highlight-color:transparent;
 }
 .notify-chip input{display:none;}
 .notify-chip.checked{border-color:var(--gold);background:linear-gradient(135deg,#fff8ec,#fff3dc);color:var(--gold);box-shadow:0 2px 8px rgba(200,151,58,.2);}
@@ -150,7 +145,7 @@ textarea{resize:none;height:80px;}
 .notify-chip.checked .dot{background:var(--gold);}
 
 /* MULTI SELECT */
-.multi-select-wrap{position:relative;}
+.multi-select-wrap{position:relative;z-index:10;}
 .multi-select-display{
   border:1.5px solid var(--paper3);border-radius:var(--r);
   padding:11px 13px;background:var(--paper);cursor:pointer;
@@ -165,7 +160,8 @@ textarea{resize:none;height:80px;}
   display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;
   background:#fff;border:1.5px solid var(--gold);
   border-radius:var(--r);box-shadow:var(--sh2);
-  z-index:200;max-height:220px;overflow-y:auto;
+  z-index:500;max-height:260px;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
 }
 .multi-select-dropdown.open{display:block;}
 .mso{
@@ -249,7 +245,7 @@ textarea{resize:none;height:80px;}
     </div>
     <div>
       <div class="logo-text">華森行程通報</div>
-      <div class="logo-sub">Schedule Notification · v6</div>
+      <div class="logo-sub">Schedule Notification · v7</div>
     </div>
     <div class="header-badge" id="syncBadge">●</div>
   </div>
@@ -284,15 +280,7 @@ textarea{resize:none;height:80px;}
 
   <!-- FORM -->
   <div class="form-card" id="formCard">
-    <div class="form-header">
-      <div class="form-header-img">
-        <img src="./icon-192.png" alt="華森" onerror="this.src='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAAgACADASIAAhEBAxEB/8QAGQAAAwADAAAAAAAAAAAAAAAAAwYHAQIF/8QAMBAAAQMCBQIBDAMAAAAAAAAAAQIDBAUGAAcREiETMQgUFRgiN0FWdJGStNMWYYH/xAAXAQEBAQEAAAAAAAAAAAAAAAAABgUH/8QAIxEAAgICAAUFAAAAAAAAAAAAAQIDBABBERIxUZFyc6HR4f/aAAwDAQACEQMRAD8ABnPnNfFrZp3JSKPcsum0uE+2zGiR2mQ20joNHakdPtqT9cJfpC5k/GdR+xj9eM+IX223h823+O1ieY5Vdu2UsyKsjABjs98q4YYjEpKjoNZQvSFzJ+M6j9jH68OuSuc98XRmva9IrFyy6lS5spTMmJIaZU26gsuEpUOn24H0xEU0yYtxpCYchS3WjIbSGVEraAJKwNOU6JUdw49U88HD/wCHuM81nXYjy2XEMvTllpxSCEuANOg7T2Oh4OnY4U7lprMatIxHMNnuMTQxCNiFHQ6wXiF9tt4fNt/jtYn7BQl9supUtoLBWlCtpKdeQDzodPfi5Zz5NXtdOadyVej25JqVLmvtvRpcd5gtuo6DQ3Alwe8Ef5hM9HzMkdrOn6/26x+zC7SstakZY2ILHR74hmiESgsOg3lfplYsk3VaYTbVdS4cupK0L8/tkNxvIqhq0R5L6yykLG/UAFQO07SCCyKjbMqu+H9NIodTp7ynaiWFTKuiSlloSH96SAwjepSuQrVISONFd8dKDYLsW5LdmuWhfa4lOtF23JIbjU3qOPLZeZ6resvQI2yXFaK51Qge86bWTl5UKXWcnj/G7ip6rWXLFWqFXEJqGG3S68VoKJC1japW3QjkEHjtikhin5xxTY17f0fGZzvHyng3z6vzzn//2Q=='">
-      </div>
-      <div class="form-header-text">
-        <h2>新增行程通報</h2>
-        <p>送出後即時通知負責人，並依設定時機自動提醒</p>
-      </div>
-    </div>
+    
     <div class="form-body">
       <form id="scheduleForm" onsubmit="handleSubmit(event)">
         <div class="form-grid">
