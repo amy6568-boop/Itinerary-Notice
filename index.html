@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" style="overflow-x:hidden;max-width:100vw;">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, user-scalable=no">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -55,7 +55,7 @@ body::before{
 .header-badge{margin-left:auto;font-size:11px;color:var(--gold2);font-family:'DM Mono',monospace;}
 
 /* MAIN */
-.app-main{padding:16px 14px calc(80px + var(--sab));max-width:680px;margin:0 auto;-webkit-overflow-scrolling:touch;}
+.app-main{padding:16px 14px calc(80px + var(--sab));max-width:100%;width:100%;margin:0 auto;-webkit-overflow-scrolling:touch;overflow-x:hidden;}
 
 /* CONFIG NOTICE */
 .config-notice{
@@ -80,22 +80,28 @@ body::before{
 .loading-bar.err{background:var(--red);}
 
 /* FORM CARD */
-.form-card{background:#fff;border-radius:16px;box-shadow:var(--sh2);overflow:hidden;margin-bottom:16px;margin-top:4px;}
+.form-card{background:#fff;border-radius:16px;box-shadow:var(--sh2);overflow:hidden;margin-bottom:16px;margin-top:4px;max-width:100%;}
 /* form-header removed */
 .form-body{padding:16px;}
 
 /* FORM GRID */
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:480px){
+  .form-grid{grid-template-columns:1fr;}
+  .form-grid .form-group.full{grid-column:1;}
+  .time-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+}
 .form-group{display:flex;flex-direction:column;gap:5px;}
 .form-group.full{grid-column:1/-1;}
 label{font-size:11px;font-weight:700;color:var(--ink3);letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:5px;}
 label .req{color:var(--red);}
 input,select,textarea{
-  font-family:'Sora',sans-serif;font-size:15px;color:var(--ink);
+  font-family:'Sora',sans-serif;font-size:16px;color:var(--ink);
   background:var(--paper);border:1.5px solid var(--paper3);
   border-radius:var(--r);padding:11px 13px;
   transition:border-color .2s,box-shadow .2s;outline:none;
   -webkit-appearance:none;appearance:none;
+  width:100%;max-width:100%;box-sizing:border-box;
 }
 input:focus,select:focus,textarea:focus{
   border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,151,58,.15);background:#fff;
@@ -306,13 +312,17 @@ textarea{resize:none;height:80px;}
             <input type="text" id="f_title" placeholder="例：Q2 策略規劃會議" required>
           </div>
 
-          <div class="form-group">
-            <label>🕐 開始時間</label>
-            <input type="time" id="f_time_start">
-          </div>
-          <div class="form-group">
-            <label>🕔 結束時間</label>
-            <input type="time" id="f_time_end">
+          <div class="form-group full">
+            <div class="time-row">
+              <div class="form-group">
+                <label>🕐 開始時間</label>
+                <input type="time" id="f_time_start">
+              </div>
+              <div class="form-group">
+                <label>🕔 結束時間</label>
+                <input type="time" id="f_time_end">
+              </div>
+            </div>
           </div>
 
           <div class="form-group full">
