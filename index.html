@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="華森通報">
 <meta name="theme-color" content="#0f1117">
-<title>華森行程通報 v7</title>
+<title>華森行程通報 v8</title>
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <link rel="icon" type="image/png" href="./icon-192.png">
@@ -29,7 +29,7 @@
 html{height:100%;}
 body{
   font-family:'Sora',sans-serif;background:var(--paper);color:var(--ink);
-  min-height:100%;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;
+  min-height:100%;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overflow-x:hidden;
 }
 body::before{
   content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
@@ -55,7 +55,7 @@ body::before{
 .header-badge{margin-left:auto;font-size:11px;color:var(--gold2);font-family:'DM Mono',monospace;}
 
 /* MAIN */
-.app-main{padding:16px 14px calc(24px + var(--sab));max-width:680px;margin:0 auto;}
+.app-main{padding:16px 14px calc(80px + var(--sab));max-width:680px;margin:0 auto;-webkit-overflow-scrolling:touch;}
 
 /* CONFIG NOTICE */
 .config-notice{
@@ -129,15 +129,14 @@ textarea{resize:none;height:80px;}
 .toggle-text{font-size:13px;font-weight:600;color:var(--ink2);}
 
 /* NOTIFY CHIPS */
-.notify-group{display:flex;gap:8px;flex-wrap:wrap;}
+.notify-group{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
 .notify-chip{
-  display:flex;align-items:center;gap:6px;padding:10px 14px;
-  border-radius:24px;border:1.5px solid var(--paper3);cursor:pointer;
-  font-size:13px;font-weight:600;color:var(--ink3);
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:12px 8px;border-radius:24px;border:1.5px solid var(--paper3);
+  cursor:pointer;font-size:13px;font-weight:600;color:var(--ink3);
   font-family:'Sora',system-ui,-apple-system,sans-serif;
   background:var(--paper);transition:all .18s;user-select:none;
-  flex:1;justify-content:center;min-width:80px;min-height:44px;
-  -webkit-tap-highlight-color:transparent;
+  width:100%;min-height:46px;-webkit-tap-highlight-color:transparent;
 }
 .notify-chip input{display:none;}
 .notify-chip.checked{border-color:var(--gold);background:linear-gradient(135deg,#fff8ec,#fff3dc);color:var(--gold);box-shadow:0 2px 8px rgba(200,151,58,.2);}
@@ -187,7 +186,7 @@ textarea{resize:none;height:80px;}
   background:linear-gradient(135deg,var(--gold),var(--gold2));
   color:var(--ink);font-family:'Sora',sans-serif;
   font-size:15px;font-weight:700;letter-spacing:.02em;
-  border:none;border-radius:12px;cursor:pointer;margin-top:18px;
+  border:none;border-radius:12px;cursor:pointer;margin-top:12px;margin-bottom:16px;
   display:flex;align-items:center;justify-content:center;gap:8px;
   box-shadow:0 4px 16px rgba(200,151,58,.32);
   transition:all .22s;-webkit-appearance:none;
@@ -245,7 +244,7 @@ textarea{resize:none;height:80px;}
     </div>
     <div>
       <div class="logo-text">華森行程通報</div>
-      <div class="logo-sub">Schedule Notification · v7</div>
+      <div class="logo-sub">Schedule Notification · v8</div>
     </div>
     <div class="header-badge" id="syncBadge">●</div>
   </div>
@@ -431,11 +430,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('f_date').valueAsDate = new Date();
 
   loadMembers();
-
-  document.addEventListener('touchmove', e => {
-    if (e.target.closest('.app-main')) return;
-    e.preventDefault();
-  }, {passive:false});
 });
 
 
